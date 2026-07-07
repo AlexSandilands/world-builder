@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "name": "Minimal"
+  },
+  "global": {
+    "artStylePrompt": "hand-drawn fantasy city map, ink and watercolour",
+    "canvas": {
+      "width": 1000,
+      "height": 1000
+    },
+    "output": {
+      "width": 8192,
+      "height": 8192
+    },
+    "scale": {
+      "metersPerUnit": 2
+    },
+    "defaultFillType": "grassland",
+    "seed": 0
+  },
+  "vocabulary": [
+    {
+      "id": "grassland",
+      "category": "region",
+      "displayName": "Grassland",
+      "maskColor": "#5a8f3c",
+      "promptFragment": "open grassland, scattered trees",
+      "streetDensity": 0
+    }
+  ],
+  "labelStyles": [],
+  "regions": [],
+  "lines": [],
+  "points": [],
+  "labels": [],
+  "customStuff": {
+    "a": 1
+  }
+}

@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/AlexSandilands/world-builder/schema/project.schema.json",
+  "title": "WorldBuilderProject",
+  "description": "A world-builder city project: the semantic source of truth the compiler, UI and history all consume. Shape-validation only; referential invariants are listed in docs/schema/project-v1.md and enforced by the orchestrator on load.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "meta",
+    "global",
+    "vocabulary",
+    "labelStyles",
+    "regions",
+    "lines",
+    "points",
+    "labels"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "description": "Format version. Readers must reject versions they do not know; migrations are forward-only and live in the orchestrator.",
+      "const": 1
+    },
+    "meta": { "$ref": "#/$defs/Meta" },
+    "global": { "$ref": "#/$defs/GlobalSettings" },
+    "vocabulary": {
+      "description": "Per-project type vocabulary (data, not code). Region and point types are defined here; line types are a fixed v1 enum because the compiler handles each specially in the line-art control.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/TypeDef" },
+      "minItems": 1
+    },
+    "labelStyles": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/LabelStyle" }
+    },
+    "regions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Region" }
+    },
+    "lines": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Line" }
+    },
+    "points": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Point" }
+    },
+    "labels": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Label" }
+    }
+  },
+  "$defs": {
+    "Id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "maxLength": 64
+    },
+    "HexColor": {
+      "description": "Canonical lowercase #rrggbb. Canonical form keeps serialisation byte-stable.",
+      "type": "string",
+      "pattern": "^#[0-9a-f]{6}$"
+    },
+    "Vec2": {
+      "description": "[x, y] in canvas units, y-down.",
+      "type": "array",
+      "prefixItems": [{ "type": "number" }, { "type": "number" }],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "Meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "description": { "type": "string" }
+      }
+    },
+    "GlobalSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artStylePrompt",
+        "canvas",
+        "output",
+        "scale",
+        "defaultFillType",
+        "seed"
+      ],
+      "properties": {
+        "artStylePrompt": {
+          "description": "Always applied to every generation pass; region prompt overrides never replace it.",
+          "type": "string",
+          "minLength": 1
+        },
+        "palette": {
+          "description": "Advisory colour conditioning for the art passes.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/HexColor" }
+        },
+        "eraNotes": {
+          "description": "Era/culture flavour woven into pass prompts.",
+          "type": "string"
+        },
+        "canvas": {
+          "description": "The authoring coordinate space. All geometry is expressed in these units; output resolution is a render setting, not a coordinate system.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width", "height"],
+          "properties": {
+            "width": { "type": "number", "exclusiveMinimum": 0 },
+            "height": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "output": {
+          "description": "Final render size in pixels. Invariant: same aspect ratio as canvas.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width", "height"],
+          "properties": {
+            "width": { "type": "integer", "minimum": 256 },
+            "height": { "type": "integer", "minimum": 256 }
+          }
+        },
+        "scale": {
+          "description": "Real-world scale intent; feeds street density and scale cues in prompts.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["metersPerUnit"],
+          "properties": {
+            "metersPerUnit": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "defaultFillType": {
+          "description": "Region-category vocabulary id used for canvas not covered by any region (the surround terrain).",
+          "$ref": "#/$defs/Id"
+        },
+        "seed": {
+          "description": "Base generation seed; per-pass/per-tile seeds derive from it deterministically.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "TypeDef": {
+      "oneOf": [
+        { "$ref": "#/$defs/RegionTypeDef" },
+        { "$ref": "#/$defs/PointTypeDef" }
+      ]
+    },
+    "RegionTypeDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "category",
+        "displayName",
+        "maskColor",
+        "promptFragment",
+        "streetDensity"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "category": { "const": "region" },
+        "displayName": { "type": "string", "minLength": 1 },
+        "maskColor": {
+          "description": "Segmentation-mask colour. Invariant: unique across region types in a project.",
+          "$ref": "#/$defs/HexColor"
+        },
+        "promptFragment": { "type": "string" },
+        "streetDensity": {
+          "description": "Street-generator density hint, 0 (none: water, farmland) to 1 (densest slum warren).",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "PointTypeDef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "displayName", "promptFragment"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "category": { "const": "point" },
+        "displayName": { "type": "string", "minLength": 1 },
+        "promptFragment": { "type": "string" }
+      }
+    },
+    "Geometry": {
+      "oneOf": [
+        { "$ref": "#/$defs/PolygonGeometry" },
+        { "$ref": "#/$defs/RectGeometry" },
+        { "$ref": "#/$defs/EllipseGeometry" }
+      ]
+    },
+    "PolygonGeometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "points"],
+      "properties": {
+        "kind": { "const": "polygon" },
+        "points": {
+          "description": "Single closed ring, implicitly closed (no repeated last point). Holes are modelled by stacking a covering region above, not by ring nesting.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Vec2" },
+          "minItems": 3
+        }
+      }
+    },
+    "RectGeometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "x", "y", "width", "height"],
+      "properties": {
+        "kind": { "const": "rect" },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "rotation": {
+          "description": "Degrees clockwise (y-down) about the rect centre. Default 0.",
+          "type": "number"
+        }
+      }
+    },
+    "EllipseGeometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "cx", "cy", "rx", "ry"],
+      "properties": {
+        "kind": { "const": "ellipse" },
+        "cx": { "type": "number" },
+        "cy": { "type": "number" },
+        "rx": { "type": "number", "exclusiveMinimum": 0 },
+        "ry": { "type": "number", "exclusiveMinimum": 0 },
+        "rotation": {
+          "description": "Degrees clockwise (y-down) about the centre. Default 0.",
+          "type": "number"
+        }
+      }
+    },
+    "PromptOverride": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "text"],
+      "properties": {
+        "mode": {
+          "description": "extend: text is appended to the type's promptFragment. override: text replaces the type's promptFragment entirely. The global artStylePrompt applies in both modes.",
+          "enum": ["extend", "override"]
+        },
+        "text": { "type": "string", "minLength": 1 }
+      }
+    },
+    "Region": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "geometry", "z"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "type": {
+          "description": "Region-category vocabulary id.",
+          "$ref": "#/$defs/Id"
+        },
+        "geometry": { "$ref": "#/$defs/Geometry" },
+        "z": {
+          "description": "Stacking order; higher wins where regions overlap. Ties broken by array order, later wins.",
+          "type": "integer"
+        },
+        "label": {
+          "description": "Semantic name (may feed prompts, e.g. \"the Tanners' Quarter\"). Rendered map text lives in labels[], not here.",
+          "type": "string"
+        },
+        "prompt": { "$ref": "#/$defs/PromptOverride" }
+      }
+    },
+    "Line": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "points", "width"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "type": { "enum": ["wall", "road", "river", "canal", "coastline"] },
+        "points": {
+          "description": "Open polyline in canvas units.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Vec2" },
+          "minItems": 2
+        },
+        "width": {
+          "description": "Stroke width in canvas units.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "style": {
+          "description": "Default solid.",
+          "enum": ["solid", "dashed"]
+        }
+      }
+    },
+    "Point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "position"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "type": {
+          "description": "Point-category vocabulary id.",
+          "$ref": "#/$defs/Id"
+        },
+        "position": { "$ref": "#/$defs/Vec2" },
+        "label": { "type": "string" },
+        "sizeHint": {
+          "description": "Footprint hint for detail-pass emphasis. Default medium.",
+          "enum": ["small", "medium", "large"]
+        }
+      }
+    },
+    "LabelStyle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "fontFamily", "fontSize", "color"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "fontFamily": { "type": "string", "minLength": 1 },
+        "fontSize": {
+          "description": "In canvas units so labels scale with the map.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "color": { "$ref": "#/$defs/HexColor" },
+        "haloColor": { "$ref": "#/$defs/HexColor" },
+        "haloWidth": {
+          "description": "Canvas units. Default 0 (no halo).",
+          "type": "number",
+          "minimum": 0
+        },
+        "curvature": {
+          "description": "Arc bend of the text baseline, -1 (full downward arc) to 1 (full upward arc). Default 0 (straight).",
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        }
+      }
+    },
+    "Label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text", "anchor", "styleId", "layer"],
+      "properties": {
+        "id": { "$ref": "#/$defs/Id" },
+        "text": { "type": "string", "minLength": 1 },
+        "anchor": {
+          "description": "Baseline-centre anchor point.",
+          "$ref": "#/$defs/Vec2"
+        },
+        "rotation": {
+          "description": "Degrees clockwise (y-down) about the anchor. Default 0.",
+          "type": "number"
+        },
+        "styleId": { "$ref": "#/$defs/Id" },
+        "layer": {
+          "description": "Draw order among labels; higher draws on top. Ties broken by array order, later wins.",
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

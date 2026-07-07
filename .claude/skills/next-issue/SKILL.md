@@ -15,6 +15,7 @@ The issue board is dependency-wired (native GitHub blocked-by relations). An iss
    - **Prefer high `unblocks`** — closing a gate issue (like the Phase 0 synthesis) is worth more than a leaf.
    - **At most one `needs-gpu` issue in flight at a time**, ever — there is one RTX 4090 and pipeline jobs saturate it. Check open PRs/assigned issues for in-flight GPU work before claiming another (`python3 scripts/issue_frontier.py --all` shows assignments).
    - Respect the `model:` label: if the issue says `model:opus` and you're a smaller model, report back instead of attempting it.
+   - `model:` labels are minimums, not ceilings — if a stronger model is available in-session, prefer it for `model:opus` issues; never downgrade below the label.
 3. Claim it: `gh issue edit NN --add-assignee @me`. Claiming is not atomic — re-read assignees afterwards (`gh issue view NN --json assignees`) and back off if you weren't first. The frontier script already excludes issues with an open `issue/NN-*` PR, but if claiming manually, check `gh pr list` too.
 4. Branch: `git checkout -b issue/NN-short-slug` from up-to-date `main`.
 5. Hand off to the `work-issue` skill (or continue with it yourself).

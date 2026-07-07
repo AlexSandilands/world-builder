@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "meta": {
+    "name": "Phase 0 test city",
+    "description": "Hand-authored exemplar city exercising every geometry kind, both prompt modes, both line styles, and curved/haloed labels. Not tied to any asset set; phase0-manifest.json is the fixture that mirrors experiments/assets/."
+  },
+  "global": {
+    "artStylePrompt": "top-down hand-drawn fantasy city map, ink linework with muted watercolour wash, parchment tone",
+    "palette": ["#c9b48a", "#7a6a4f", "#5a8f3c", "#3c6e8f", "#8f3c3c"],
+    "eraNotes": "late-medieval trading city, northern European character",
+    "canvas": { "width": 2048, "height": 1536 },
+    "output": { "width": 12288, "height": 9216 },
+    "scale": { "metersPerUnit": 1.5 },
+    "defaultFillType": "farmland",
+    "seed": 20260707
+  },
+  "vocabulary": [
+    { "id": "farmland", "category": "region", "displayName": "Farmland", "maskColor": "#b8a860", "promptFragment": "patchwork farmland, hedgerows, scattered farmhouses", "streetDensity": 0.05 },
+    { "id": "water", "category": "region", "displayName": "Water", "maskColor": "#3c6e8f", "promptFragment": "deep river water, subtle current lines", "streetDensity": 0 },
+    { "id": "forest", "category": "region", "displayName": "Forest", "maskColor": "#2e5c2e", "promptFragment": "dense broadleaf forest canopy", "streetDensity": 0 },
+    { "id": "marsh", "category": "region", "displayName": "Marsh", "maskColor": "#6e8f5c", "promptFragment": "reedy marshland, standing water, boardwalks", "streetDensity": 0.02 },
+    { "id": "castle-ward", "category": "region", "displayName": "Castle ward", "maskColor": "#8f3c3c", "promptFragment": "castle keep, curtain walls, baileys, banners", "streetDensity": 0.2 },
+    { "id": "noble-quarter", "category": "region", "displayName": "Noble quarter", "maskColor": "#c05c8f", "promptFragment": "grand manors, private gardens, wide avenues", "streetDensity": 0.35 },
+    { "id": "temple-district", "category": "region", "displayName": "Temple district", "maskColor": "#e0d0a0", "promptFragment": "temples and shrines, cloisters, processional square", "streetDensity": 0.4 },
+    { "id": "market-district", "category": "region", "displayName": "Market district", "maskColor": "#e08f3c", "promptFragment": "market squares, stalls, guildhalls, dense shopfronts", "streetDensity": 0.75 },
+    { "id": "artisan-district", "category": "region", "displayName": "Artisan district", "maskColor": "#a0703c", "promptFragment": "workshops, kilns, courtyard smithies", "streetDensity": 0.65 },
+    { "id": "residential-dense", "category": "region", "displayName": "Dense residential", "maskColor": "#c0a070", "promptFragment": "tightly packed timber-frame houses, narrow lanes", "streetDensity": 0.85 },
+    { "id": "residential-modest", "category": "region", "displayName": "Modest residential", "maskColor": "#d0b890", "promptFragment": "modest row houses, small yards", "streetDensity": 0.6 },
+    { "id": "slum", "category": "region", "displayName": "Slum", "maskColor": "#705848", "promptFragment": "ramshackle lean-tos, crooked alleys, patched roofs", "streetDensity": 1 },
+    { "id": "docks", "category": "region", "displayName": "Docks", "maskColor": "#4c5c70", "promptFragment": "wharves, cranes, moored ships, warehouses", "streetDensity": 0.55 },
+    { "id": "warehouse-district", "category": "region", "displayName": "Warehouse district", "maskColor": "#707070", "promptFragment": "long warehouse rows, wagon yards", "streetDensity": 0.45 },
+    { "id": "garrison", "category": "region", "displayName": "Garrison", "maskColor": "#903030", "promptFragment": "barracks, drill yard, armoury", "streetDensity": 0.25 },
+    { "id": "graveyard", "category": "region", "displayName": "Graveyard", "maskColor": "#8f8f9f", "promptFragment": "walled graveyard, mausoleums, cypress trees", "streetDensity": 0.05 },
+    { "id": "park", "category": "region", "displayName": "Park", "maskColor": "#5a8f3c", "promptFragment": "public green, tree-lined paths", "streetDensity": 0.1 },
+    { "id": "ruins", "category": "region", "displayName": "Ruins", "maskColor": "#5c5040", "promptFragment": "burned-out ruins, collapsed roofs, rubble", "streetDensity": 0.3 },
+    { "id": "landmark", "category": "point", "displayName": "Landmark", "promptFragment": "a distinctive landmark building" },
+    { "id": "gate", "category": "point", "displayName": "City gate", "promptFragment": "fortified gatehouse with towers" }
+  ],
+  "labelStyles": [
+    { "id": "district", "fontFamily": "IM Fell English", "fontSize": 28, "color": "#3a2f20", "haloColor": "#e8dcc0", "haloWidth": 3 },
+    { "id": "river", "fontFamily": "IM Fell English", "fontSize": 22, "color": "#2c4e66", "haloColor": "#e8dcc0", "haloWidth": 2, "curvature": 0.3 },
+    { "id": "title", "fontFamily": "Cinzel", "fontSize": 64, "color": "#3a2f20", "haloColor": "#e8dcc0", "haloWidth": 5 }
+  ],
+  "regions": [
+    { "id": "river-main", "type": "water", "z": 1, "geometry": { "kind": "polygon", "points": [[0, 620], [400, 600], [900, 660], [1400, 700], [2048, 680], [2048, 800], [1400, 820], [900, 780], [400, 720], [0, 740]] } },
+    { "id": "forest-north", "type": "forest", "z": 1, "geometry": { "kind": "polygon", "points": [[0, 0], [700, 0], [500, 220], [120, 260]] } },
+    { "id": "marsh-east", "type": "marsh", "z": 1, "geometry": { "kind": "polygon", "points": [[1800, 800], [2048, 780], [2048, 1100], [1850, 1060]] } },
+    { "id": "castle", "type": "castle-ward", "z": 10, "label": "Highcourt", "geometry": { "kind": "ellipse", "cx": 760, "cy": 380, "rx": 130, "ry": 100 } },
+    { "id": "noble", "type": "noble-quarter", "z": 5, "geometry": { "kind": "polygon", "points": [[560, 260], [980, 240], [1020, 480], [600, 520]] } },
+    { "id": "temple", "type": "temple-district", "z": 5, "geometry": { "kind": "polygon", "points": [[1020, 300], [1260, 280], [1300, 480], [1040, 500]] } },
+    { "id": "market", "type": "market-district", "z": 5, "label": "the Great Shambles", "prompt": { "mode": "extend", "text": "fish market spilling onto the quays" }, "geometry": { "kind": "polygon", "points": [[900, 500], [1300, 480], [1340, 640], [920, 660]] } },
+    { "id": "artisan", "type": "artisan-district", "z": 5, "geometry": { "kind": "polygon", "points": [[520, 520], [900, 500], [920, 660], [560, 680]] } },
+    { "id": "res-north", "type": "residential-dense", "z": 4, "geometry": { "kind": "polygon", "points": [[380, 280], [560, 260], [600, 520], [560, 680], [400, 660]] } },
+    { "id": "res-east", "type": "residential-modest", "z": 4, "geometry": { "kind": "polygon", "points": [[1300, 300], [1560, 320], [1580, 620], [1340, 640], [1300, 480]] } },
+    { "id": "docks-north", "type": "docks", "z": 6, "geometry": { "kind": "polygon", "points": [[920, 620], [1340, 600], [1340, 700], [920, 700]] } },
+    { "id": "warehouses", "type": "warehouse-district", "z": 5, "geometry": { "kind": "polygon", "points": [[960, 800], [1300, 790], [1320, 960], [980, 980]] } },
+    { "id": "southbank-res", "type": "residential-modest", "z": 4, "geometry": { "kind": "polygon", "points": [[620, 780], [960, 800], [980, 980], [640, 1000]] } },
+    { "id": "southbank-slum", "type": "slum", "z": 4, "label": "the Shallows", "prompt": { "mode": "override", "text": "flood-prone shanty town on stilts, mud lanes, drying nets" }, "geometry": { "kind": "polygon", "points": [[1320, 780], [1660, 760], [1700, 1000], [1340, 1020]] } },
+    { "id": "garrison-south", "type": "garrison", "z": 6, "geometry": { "kind": "rect", "x": 700, "y": 1020, "width": 200, "height": 140 } },
+    { "id": "graveyard-west", "type": "graveyard", "z": 4, "geometry": { "kind": "rect", "x": 360, "y": 900, "width": 160, "height": 130, "rotation": 15 } },
+    { "id": "park-temple", "type": "park", "z": 6, "geometry": { "kind": "ellipse", "cx": 1160, "cy": 400, "rx": 50, "ry": 40 } },
+    { "id": "burned-block", "type": "ruins", "z": 20, "label": "the Ashes", "geometry": { "kind": "rect", "x": 1080, "y": 540, "width": 90, "height": 70 } }
+  ],
+  "lines": [
+    { "id": "wall-north", "type": "wall", "width": 8, "points": [[380, 280], [560, 260], [980, 240], [1260, 280], [1560, 320], [1580, 620], [1340, 640], [920, 660], [560, 680], [400, 660], [380, 280]] },
+    { "id": "wall-south", "type": "wall", "width": 8, "points": [[620, 780], [960, 800], [1300, 790], [1320, 780], [1660, 760], [1700, 1000], [1340, 1020], [980, 980], [640, 1000], [620, 780]] },
+    { "id": "road-kings", "type": "road", "width": 6, "points": [[380, 470], [600, 460], [920, 440], [1160, 430], [1580, 460]] },
+    { "id": "road-south-gate", "type": "road", "width": 5, "points": [[1160, 430], [1150, 660], [1130, 790], [1120, 1160]] },
+    { "id": "road-west-approach", "type": "road", "width": 4, "points": [[0, 500], [380, 470]] },
+    { "id": "road-processional", "type": "road", "width": 4, "style": "dashed", "points": [[1040, 500], [1160, 430]] },
+    { "id": "river-centreline", "type": "river", "width": 12, "points": [[0, 680], [400, 660], [900, 720], [1400, 760], [2048, 740]] },
+    { "id": "canal-docks", "type": "canal", "width": 5, "points": [[1150, 700], [1160, 790]] }
+  ],
+  "points": [
+    { "id": "cathedral", "type": "landmark", "position": [1150, 380], "label": "Cathedral of the Nine Bells", "sizeHint": "large" },
+    { "id": "guildhall", "type": "landmark", "position": [1100, 560], "label": "Weavers' Guildhall" },
+    { "id": "north-gate", "type": "gate", "position": [1160, 430], "label": "King's Gate", "sizeHint": "medium" },
+    { "id": "south-gate", "type": "gate", "position": [1120, 1000], "label": "Marsh Gate", "sizeHint": "small" }
+  ],
+  "labels": [
+    { "id": "title", "text": "AELDERMOUTH", "anchor": [1024, 120], "styleId": "title", "layer": 10 },
+    { "id": "lbl-market", "text": "The Great Shambles", "anchor": [1110, 570], "styleId": "district", "layer": 5 },
+    { "id": "lbl-shallows", "text": "The Shallows", "anchor": [1500, 890], "styleId": "district", "layer": 5 },
+    { "id": "lbl-river", "text": "River Aelder", "anchor": [700, 690], "rotation": 4, "styleId": "river", "layer": 6 }
+  ]
+}
