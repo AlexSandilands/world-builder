@@ -24,10 +24,10 @@ under pan/zoom.
 ### PixiJS v8 — chosen
 
 - **Large tiled image:** WebGL/WebGPU renderer built for thousands of sprites. A
-  tile pyramid is just sprites in a container; only the viewport's visible tiles at
-  the current level are ever uploaded, so GPU memory is bounded by the viewport, not
-  the artwork. Directly satisfies "never one 16k texture." Proven in this spike —
-  see evidence below.
+  tile pyramid is just sprites in a container; resident sprites are bounded by the
+  viewport and offscreen textures by an LRU cache cap (256 tiles ≈ 64 MB), so GPU
+  memory stays bounded regardless of artwork size. Directly satisfies "never one
+  16k texture." Proven in this spike — see evidence below.
 - **One coordinate system:** a single `world` Container carries the pan/zoom
   transform; tiles and vector layers are its children, so they cannot drift out of
   registration. This is exactly the architecture the frontend guideline prescribes
@@ -83,6 +83,9 @@ hides its geometry. Console error count: 0.
 `src/canvas/tiles/tileMath.ts` encodes the level-selection and visible-tile
 geometry and is unit-tested (`tileMath.test.ts`), including an explicit assertion
 that a viewport window resolves to <1% of the full-image tile set.
+`TileLayer.test.ts` sweeps a full-resolution pan across the entire 16k image and
+asserts the texture cache never exceeds its cap, so the bounded-GPU-memory claim
+is enforced by test, not just asserted in a comment.
 
 ## What the scaffold establishes (and what it defers)
 
@@ -102,3 +105,6 @@ Deferred, by design, to the editing issues that depend on #16 (#17/#20/#30):
 - **Design tokens:** styling is placeholder literals until #37 delivers `tokens.css`.
 - **Interactive vertex editing:** handles render; dragging them to edit geometry is
   the first editing issue's job.
+- **Smarter tile caching:** the spike's texture cache is a flat LRU cap. Tile
+  prefetching, coarser-level fallback while tiles load, and cache sizing tuned to
+  real orchestrator tiles are follow-up work for the generation-display issues.

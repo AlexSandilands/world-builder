@@ -19,7 +19,8 @@ export class CanvasController {
   private vectors = new VectorLayer()
   private view: Viewport = { tx: 0, ty: 0, scale: 1 }
   private layers: Layer[] = []
-  private world_size = { width: 1, height: 1 }
+  private lastVectorScale = -1
+  private worldSize = { width: 1, height: 1 }
   private dragging = false
   private last = { x: 0, y: 0 }
   private disposers: Array<() => void> = []
@@ -50,7 +51,7 @@ export class CanvasController {
     this.world.addChild(this.vectors)
     this.app.stage.addChild(this.world)
 
-    this.world_size = project.world
+    this.worldSize = project.world
     this.layers = project.layers
     this.bindInput()
     this.fit()
@@ -58,11 +59,12 @@ export class CanvasController {
 
   setLayers(layers: Layer[]): void {
     this.layers = layers
+    this.lastVectorScale = -1
     this.apply()
   }
 
   fit(): void {
-    this.view = fitToScreen(this.world_size, this.app.screen)
+    this.view = fitToScreen(this.worldSize, this.app.screen)
     this.apply()
   }
 
@@ -110,7 +112,13 @@ export class CanvasController {
     this.world.position.set(this.view.tx, this.view.ty)
     this.world.scale.set(this.view.scale)
     this.tiles?.update(this.view, this.app.screen)
-    this.vectors.redraw(this.layers, this.view.scale)
+    // Pan is a pure transform of the world container; vector geometry only
+    // needs rebuilding when zoom changes handle/stroke screen sizes or the
+    // layer data changed (setLayers invalidates lastVectorScale).
+    if (this.view.scale !== this.lastVectorScale) {
+      this.vectors.redraw(this.layers, this.view.scale)
+      this.lastVectorScale = this.view.scale
+    }
     this.onReadout(Math.round(this.view.scale * 100), this.tiles?.residentTileCount ?? 0)
   }
 

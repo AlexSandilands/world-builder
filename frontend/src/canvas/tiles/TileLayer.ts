@@ -4,12 +4,18 @@ import { screenToWorld } from '../viewportMath'
 import type { TileSource } from './TileSource'
 import { levelDimensions, levelForScale, tileKey, visibleTiles } from './tileMath'
 
-// Renders the artwork tile pyramid as sprites inside the world container. Only
-// tiles intersecting the current viewport at the current level are ever
-// materialised, so GPU texture memory stays bounded no matter how large the
+// Offscreen textures kept for re-pan; least-recently-visible beyond this cap
+// are destroyed. 256 tiles × 256² RGBA ≈ 64 MB — the true GPU ceiling.
+const TEXTURE_CACHE_CAP = 256
+
+// Renders the artwork tile pyramid as sprites inside the world container.
+// Resident sprites are bounded by the viewport and cached textures by
+// TEXTURE_CACHE_CAP, so GPU memory stays bounded no matter how large the
 // artwork is — the "never one 16k texture" invariant, enforced at runtime.
 export class TileLayer extends Container {
   private readonly sprites = new Map<string, Sprite>()
+  // Insertion order doubles as LRU order: visible keys are re-appended each
+  // update, so eviction walks from the least recently visible.
   private readonly textures = new Map<string, Texture>()
   private readonly source: TileSource
 
@@ -36,12 +42,15 @@ export class TileLayer extends Container {
 
     for (const id of needed) {
       const key = tileKey(id)
-      if (this.sprites.has(key)) continue
       let texture = this.textures.get(key)
-      if (!texture) {
+      if (texture) {
+        this.textures.delete(key)
+      } else {
         texture = Texture.from(this.source.getTileCanvas(id))
-        this.textures.set(key, texture)
       }
+      this.textures.set(key, texture)
+
+      if (this.sprites.has(key)) continue
       const sprite = new Sprite(texture)
       sprite.x = id.col * worldPerTile
       sprite.y = id.row * worldPerTile
@@ -56,10 +65,21 @@ export class TileLayer extends Container {
       sprite.destroy()
       this.sprites.delete(key)
     }
+
+    for (const [key, texture] of this.textures) {
+      if (this.textures.size <= TEXTURE_CACHE_CAP) break
+      if (neededKeys.has(key)) continue
+      texture.destroy(true)
+      this.textures.delete(key)
+    }
   }
 
   get residentTileCount(): number {
     return this.sprites.size
+  }
+
+  get cachedTextureCount(): number {
+    return this.textures.size
   }
 
   destroy(): void {

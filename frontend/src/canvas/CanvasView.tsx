@@ -9,9 +9,12 @@ export function CanvasView() {
   const hostRef = useRef<HTMLDivElement>(null)
   const controllerRef = useRef<CanvasController | null>(null)
   const layers = useProjectStore((s) => s.project.layers)
-  const project = useProjectStore((s) => s.project)
   const fitNonce = useViewportStore((s) => s.fitNonce)
 
+  // Mount exactly once: store mutations (layer toggles replace the project
+  // object identity) must flow through setLayers, never tear down the WebGL
+  // context or reset the viewport. Loading a different project will need an
+  // explicit remount path when that feature lands.
   useEffect(() => {
     const host = hostRef.current
     if (!host) return
@@ -24,8 +27,13 @@ export function CanvasView() {
     controller
       .mount(host, useProjectStore.getState().project)
       .then(() => {
-        if (cancelled) controller.destroy()
-        else controllerRef.current = controller
+        if (cancelled) {
+          controller.destroy()
+          return
+        }
+        controllerRef.current = controller
+        // Catch up on toggles that happened while init was in flight.
+        controller.setLayers(useProjectStore.getState().project.layers)
       })
       .catch(() => {})
 
@@ -34,7 +42,7 @@ export function CanvasView() {
       controllerRef.current?.destroy()
       controllerRef.current = null
     }
-  }, [project])
+  }, [])
 
   useEffect(() => {
     controllerRef.current?.setLayers(layers)
