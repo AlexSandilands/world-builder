@@ -6,4 +6,4 @@
 - Codegen targets: Pydantic v2 models (orchestrator) via datamodel-code-generator; TypeScript types (frontend) via json-schema-to-typescript. CI fails if generated output is stale.
 - The schema is versioned (`schemaVersion` field); migrations are forward-only and live in the orchestrator.
 
-Format documentation and design rationale accompany the schema here as #10 lands.
+Format documentation and design rationale: [project-v1.md](project-v1.md) — coordinate space, prompt override-vs-extend semantics, invariants beyond the schema, canonical form, migration stance.
