@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "meta": {
     "name": "Phase 0 test city",
-    "description": "Hand-authored ~20-district walled river city used by the Phase 0 experiments. Mirrors experiments/assets/; reconcile if that manifest changes."
+    "description": "Hand-authored exemplar city exercising every geometry kind, both prompt modes, both line styles, and curved/haloed labels. Not tied to any asset set; phase0-manifest.json is the fixture that mirrors experiments/assets/."
   },
   "global": {
     "artStylePrompt": "top-down hand-drawn fantasy city map, ink linework with muted watercolour wash, parchment tone",
