@@ -2,7 +2,7 @@
 
 Semantic city map generator: the user authors a city's *meaning* (regions, walls, roads, landmarks, tagged with types and prompts) on a canvas; a two-pass ComfyUI diffusion pipeline renders the artwork at 8k–16k. Authorship lives in the semantic layer; the AI handles the pixels.
 
-Spec: `docs/planning/city-map-tool-spec.md` — §8 lists binding decisions. Work is driven by the GitHub issue board (dependency-wired, model labels).
+`docs/VISION.md` holds the success criteria and standing decisions. Work is driven by the GitHub issue board (dependency-wired, model labels).
 
 ## Commands
 

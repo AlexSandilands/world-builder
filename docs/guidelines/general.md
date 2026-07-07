@@ -5,7 +5,7 @@
 - **500 LoC per file, hard cap.** Approaching it is the signal to split by responsibility. Never merge a file over the cap.
 - Small, single-purpose functions; module-level organisation over deep class hierarchies.
 - **Comments** exist only for what code cannot express: invariants, constraints, non-obvious whys (e.g. "feather must exceed tile overlap or seams show"). Delete narration ("loop over tiles"), history ("used to be X"), and section banners. If a comment restates the line below it, remove one of them.
-- Naming: boring and literal beats clever. The domain vocabulary is the spec's: region, line, point, label, manifest, pass, tile, generation.
+- Naming: boring and literal beats clever. The domain vocabulary is fixed: region, line, point, label, manifest, pass, tile, generation.
 
 ## Errors
 
