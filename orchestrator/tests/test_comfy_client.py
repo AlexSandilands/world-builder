@@ -1,6 +1,8 @@
+import asyncio
+
 import pytest
 
-from orchestrator.comfy import ComfyClient
+from orchestrator.comfy import ComfyClient, ProgressUpdate
 from orchestrator.comfy.client import run_with_retry
 from orchestrator.errors import ComfyError
 
@@ -30,18 +32,36 @@ async def test_retry_exhausts_and_raises() -> None:
         await run_with_retry(always_down, attempts=3, backoff_base=0.0)
 
 
-async def test_submit_stream_fetch_interrupt() -> None:
-    app, recorder = make_fake_comfy(steps_per_prompt=2, delay=0.0)
+async def test_run_workflow_streams_and_fetches() -> None:
+    app, recorder = make_fake_comfy(steps_per_prompt=2, delay=0.01)
     async with serve(app) as port:
         client = ComfyClient(f"http://127.0.0.1:{port}", f"ws://127.0.0.1:{port}")
-        prompt_id = await client.submit({"step": 0})
-        updates = [u async for u in client.stream_progress(prompt_id)]
+        async with client.run_workflow({"step": 0}) as run:
+            updates = [u async for u in run.updates]
         assert [u.value for u in updates] == [1, 2]
         assert updates[-1].max == 2
 
-        outputs = await client.fetch_outputs(prompt_id)
+        outputs = await client.fetch_outputs(run.prompt_id)
         assert "images" in outputs
 
         await client.interrupt()
         assert recorder.interrupts == 1
+        await client.aclose()
+
+
+async def test_run_workflow_survives_instant_completion() -> None:
+    # The fake delivers events only to sockets connected before /prompt; with
+    # zero delay the whole script fires immediately after submission. A client
+    # that dialled the socket after submitting would miss the terminal event
+    # and hang — wait_for turns that regression into a test failure.
+    app, _ = make_fake_comfy(steps_per_prompt=1, delay=0.0)
+    async with serve(app) as port:
+        client = ComfyClient(f"http://127.0.0.1:{port}", f"ws://127.0.0.1:{port}")
+
+        async def consume() -> list[ProgressUpdate]:
+            async with client.run_workflow({"step": 0}) as run:
+                return [u async for u in run.updates]
+
+        updates = await asyncio.wait_for(consume(), timeout=5)
+        assert [u.value for u in updates] == [1]
         await client.aclose()

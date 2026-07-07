@@ -30,6 +30,10 @@ class JobQueue:
         self._current: str | None = None
         self._worker: asyncio.Task[None] | None = None
 
+    @property
+    def idle(self) -> bool:
+        return self._current is None and self._pending.empty()
+
     async def start(self) -> None:
         await self._recover()
         self._worker = asyncio.create_task(self._run())
@@ -49,13 +53,16 @@ class JobQueue:
         record = await self._repo.get(job_id)
         if record is None:
             return None
-        if record.state == JobState.QUEUED and job_id != self._current:
-            await self._repo.set_state(job_id, JobState.CANCELLED)
+        # The _current check must come first: between _execute picking a job up
+        # and persisting RUNNING, its record still reads QUEUED — treating that
+        # window as queued would mark it CANCELLED under a live handler.
+        if job_id == self._current or record.state == JobState.RUNNING:
             self._cancel_requested.add(job_id)
+            return await self._repo.get(job_id)
+        if record.state == JobState.QUEUED:
+            await self._repo.set_state(job_id, JobState.CANCELLED)
             await self._emit_state(job_id, JobState.CANCELLED)
             return await self._repo.get(job_id)
-        if record.state == JobState.RUNNING:
-            self._cancel_requested.add(job_id)
         return record
 
     async def resume(self, record: JobRecord) -> JobRecord:
@@ -89,11 +96,16 @@ class JobQueue:
         record = await self._repo.get(job_id)
         if record is None:
             return
-        if job_id in self._cancel_requested or record.state == JobState.CANCELLED:
+        # Only QUEUED records may run. _pending can hold stale ids — a job
+        # cancelled while queued, or one re-enqueued by resume and already
+        # executed by an earlier entry — and none of those may re-enter RUNNING.
+        if record.state != JobState.QUEUED:
             self._cancel_requested.discard(job_id)
-            if record.state != JobState.CANCELLED:
-                await self._repo.set_state(job_id, JobState.CANCELLED)
-                await self._emit_state(job_id, JobState.CANCELLED)
+            return
+        if job_id in self._cancel_requested:
+            self._cancel_requested.discard(job_id)
+            await self._repo.set_state(job_id, JobState.CANCELLED)
+            await self._emit_state(job_id, JobState.CANCELLED)
             return
 
         handler = get_handler(record.kind)

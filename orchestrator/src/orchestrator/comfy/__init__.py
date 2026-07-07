@@ -1,3 +1,3 @@
-from .client import ComfyClient, ProgressUpdate
+from .client import ComfyClient, ProgressUpdate, WorkflowRun
 
-__all__ = ["ComfyClient", "ProgressUpdate"]
+__all__ = ["ComfyClient", "ProgressUpdate", "WorkflowRun"]

@@ -20,7 +20,7 @@ FastAPI pipeline service. See the root README for the dev quick-start and `docs/
 - `app.py` — app factory + lifespan wiring; `config.py` — env settings; `db.py` — aiosqlite connect + numbered migrations in `migrations/`.
 - `projects/` — project CRUD (REST + repo). Projects store opaque JSON today; schema validation arrives with codegen.
 - `jobs/` — serial single-GPU job queue with per-step checkpointing, cooperative cancellation, crash/restart resume, and a WebSocket progress feed. `handlers.py` registers job kinds (`demo` is the reference handler; real generation plugs in the same way).
-- `comfy/client.py` — the sole ComfyUI client: submit workflow, stream progress over WS, interrupt, fetch outputs, with retry/backoff on connection loss.
+- `comfy/client.py` — the sole ComfyUI client: `run_workflow` opens the progress socket before submitting (events are only pushed to already-connected clients), streams updates, plus interrupt and output fetch, with retry/backoff on connection loss.
 
 ## API
 

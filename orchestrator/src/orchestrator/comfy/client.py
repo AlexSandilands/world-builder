@@ -1,6 +1,7 @@
 import asyncio
 import json
-from collections.abc import AsyncIterator, Awaitable, Callable
+from collections.abc import AsyncGenerator, AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from typing import Any
 
@@ -36,6 +37,12 @@ class ProgressUpdate:
     node: str | None
 
 
+@dataclass(frozen=True)
+class WorkflowRun:
+    prompt_id: str
+    updates: AsyncIterator[ProgressUpdate]
+
+
 class ComfyClient:
     """Single point of contact with ComfyUI.
 
@@ -65,36 +72,19 @@ class ComfyClient:
     def client_id(self) -> str:
         return self._client_id
 
-    async def submit(self, workflow: dict[str, Any]) -> str:
-        async def call() -> str:
-            resp = await self._http.post(
-                "/prompt", json={"prompt": workflow, "client_id": self._client_id}
-            )
-            resp.raise_for_status()
-            return str(resp.json()["prompt_id"])
+    @asynccontextmanager
+    async def run_workflow(self, workflow: dict[str, Any]) -> AsyncGenerator[WorkflowRun, None]:
+        """Submit a workflow with its progress stream already listening.
 
-        return await self._retry(call)
-
-    async def stream_progress(self, prompt_id: str) -> AsyncIterator[ProgressUpdate]:
+        The socket MUST be open before /prompt is sent: ComfyUI pushes events
+        only to already-connected clients, so submit-then-connect drops early
+        events and hangs forever on prompts that finish inside the gap.
+        """
         uri = f"{self._ws_url}/ws?clientId={self._client_id}"
         connection = await self._retry(lambda: websockets.connect(uri, open_timeout=self._timeout))
         try:
-            async for raw in connection:
-                message: dict[str, Any] = json.loads(raw)
-                data: dict[str, Any] = message.get("data") or {}
-                if data.get("prompt_id") not in (None, prompt_id):
-                    continue
-                kind = message.get("type")
-                if kind == "progress":
-                    yield ProgressUpdate(
-                        value=int(data.get("value", 0)),
-                        max=int(data.get("max", 0)),
-                        node=data.get("node"),
-                    )
-                elif kind == "execution_error":
-                    raise ComfyError(data.get("exception_message", "ComfyUI execution error"))
-                elif kind == "executing" and data.get("node") is None:
-                    return
+            prompt_id = await self._submit(workflow)
+            yield WorkflowRun(prompt_id=prompt_id, updates=self._stream(connection, prompt_id))
         finally:
             await connection.close()
 
@@ -116,6 +106,36 @@ class ComfyClient:
 
     async def aclose(self) -> None:
         await self._http.aclose()
+
+    async def _submit(self, workflow: dict[str, Any]) -> str:
+        async def call() -> str:
+            resp = await self._http.post(
+                "/prompt", json={"prompt": workflow, "client_id": self._client_id}
+            )
+            resp.raise_for_status()
+            return str(resp.json()["prompt_id"])
+
+        return await self._retry(call)
+
+    async def _stream(
+        self, connection: websockets.ClientConnection, prompt_id: str
+    ) -> AsyncIterator[ProgressUpdate]:
+        async for raw in connection:
+            message: dict[str, Any] = json.loads(raw)
+            data: dict[str, Any] = message.get("data") or {}
+            if data.get("prompt_id") not in (None, prompt_id):
+                continue
+            kind = message.get("type")
+            if kind == "progress":
+                yield ProgressUpdate(
+                    value=int(data.get("value", 0)),
+                    max=int(data.get("max", 0)),
+                    node=data.get("node"),
+                )
+            elif kind == "execution_error":
+                raise ComfyError(data.get("exception_message", "ComfyUI execution error"))
+            elif kind == "executing" and data.get("node") is None:
+                return
 
     async def _retry[T](self, call: Callable[[], Awaitable[T]]) -> T:
         return await run_with_retry(

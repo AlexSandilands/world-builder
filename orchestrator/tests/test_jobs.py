@@ -7,10 +7,14 @@ import httpx
 import websockets
 
 from orchestrator.app import create_app
+from orchestrator.comfy import ComfyClient
 from orchestrator.config import Settings
 from orchestrator.db import connect
+from orchestrator.jobs import handlers
+from orchestrator.jobs.events import EventBus
+from orchestrator.jobs.queue import JobQueue
 from orchestrator.jobs.repo import JobRepo
-from orchestrator.jobs.state import JobState
+from orchestrator.jobs.state import JobContext, JobState
 
 from .fake_comfy import make_fake_comfy
 from .harness import serve
@@ -69,7 +73,7 @@ async def test_enqueue_progress_cancel_resume(tmp_path: Path) -> None:
                 assert 1 <= done_before < 5
 
                 resumed = await http.post(f"/api/jobs/{job_id}/resume")
-                assert resumed.status_code == 201 or resumed.status_code == 200
+                assert resumed.status_code == 200
 
                 finished = await _wait_state(http, job_id, {"done"})
                 assert finished["checkpoint"]["completed"] == 5
@@ -99,6 +103,48 @@ async def test_crash_recovery_resumes_from_checkpoint(tmp_path: Path) -> None:
 
     # Only the two unfinished steps ran; the checkpointed prefix was not repeated.
     assert recorder.submitted_steps == [2, 3]
+
+
+async def test_cancel_while_queued_then_resume_runs_once(tmp_path: Path) -> None:
+    # Regression: a job cancelled while queued leaves a stale id in _pending;
+    # resuming re-enqueues it (and _recover adds a third entry on start). Only
+    # one of those entries may execute the handler — a DONE job must never
+    # re-enter RUNNING off a stale entry.
+    conn = await connect(str(tmp_path / "requeue.db"))
+    repo = JobRepo(conn)
+    comfy = ComfyClient("http://127.0.0.1:1", "ws://127.0.0.1:1")
+    queue = JobQueue(repo, EventBus(), comfy)
+
+    executions: list[str] = []
+
+    async def counting_handler(ctx: JobContext) -> None:
+        executions.append(ctx.job_id)
+
+    handlers.register("counting-test", counting_handler)
+    try:
+        record = await repo.create("counting-test", {}, None)
+        await queue.enqueue(record)
+        cancelled = await queue.request_cancel(record.id)
+        assert cancelled is not None and cancelled.state == JobState.CANCELLED
+        await queue.resume(record)
+        await queue.start()
+
+        deadline = asyncio.get_event_loop().time() + 5
+        while True:
+            current = await repo.get(record.id)
+            assert current is not None
+            if current.state == JobState.DONE and queue.idle:
+                break
+            assert asyncio.get_event_loop().time() < deadline, current.state
+            await asyncio.sleep(0.02)
+
+        assert executions == [record.id]
+        final = await repo.get(record.id)
+        assert final is not None and final.state == JobState.DONE
+    finally:
+        await queue.stop()
+        await comfy.aclose()
+        await conn.close()
 
 
 async def test_unknown_kind_fails(tmp_path: Path) -> None:

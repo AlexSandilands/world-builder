@@ -1,8 +1,9 @@
 import asyncio
+import contextlib
 from dataclasses import dataclass, field
 from typing import Any
 
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 
 
 @dataclass
@@ -16,11 +17,44 @@ class Recorder:
 
 
 def make_fake_comfy(*, steps_per_prompt: int = 2, delay: float = 0.02) -> tuple[FastAPI, Recorder]:
-    """A stand-in for ComfyUI: records submissions, streams scripted progress over
-    WS, and honours /interrupt by stopping the stream without a completion event."""
+    """A stand-in for ComfyUI: records submissions, streams scripted progress
+    over WS, and honours /interrupt by stopping the stream without a completion
+    event.
+
+    Like the real backend, events are pushed only to sockets connected at
+    submission time — a client that connects after /prompt misses everything,
+    including the terminal event. This is what catches submit-before-connect
+    regressions in the client.
+    """
     app = FastAPI()
     rec = Recorder()
-    state: dict[str, Any] = {"active": None, "interrupt": asyncio.Event(), "counter": 0}
+    sockets: set[WebSocket] = set()
+    tasks: set[asyncio.Task[None]] = set()
+    state: dict[str, Any] = {"interrupt": asyncio.Event(), "counter": 0}
+
+    async def script(prompt_id: str, targets: list[WebSocket]) -> None:
+        async def send(payload: dict[str, Any]) -> None:
+            for socket in targets:
+                # A disconnected client just stops receiving, as with real ComfyUI.
+                with contextlib.suppress(Exception):
+                    await socket.send_json(payload)
+
+        for i in range(steps_per_prompt):
+            if state["interrupt"].is_set():
+                return
+            await asyncio.sleep(delay)
+            await send(
+                {
+                    "type": "progress",
+                    "data": {
+                        "prompt_id": prompt_id,
+                        "value": i + 1,
+                        "max": steps_per_prompt,
+                        "node": "sampler",
+                    },
+                }
+            )
+        await send({"type": "executing", "data": {"prompt_id": prompt_id, "node": None}})
 
     @app.post("/prompt")
     async def prompt(request: Request) -> dict[str, str]:
@@ -28,8 +62,10 @@ def make_fake_comfy(*, steps_per_prompt: int = 2, delay: float = 0.02) -> tuple[
         state["counter"] += 1
         prompt_id = f"p{state['counter']}"
         rec.submissions.append(body["prompt"])
-        state["active"] = prompt_id
         state["interrupt"].clear()
+        task = asyncio.create_task(script(prompt_id, list(sockets)))
+        tasks.add(task)
+        task.add_done_callback(tasks.discard)
         return {"prompt_id": prompt_id}
 
     @app.post("/interrupt")
@@ -45,28 +81,13 @@ def make_fake_comfy(*, steps_per_prompt: int = 2, delay: float = 0.02) -> tuple[
     @app.websocket("/ws")
     async def ws(socket: WebSocket) -> None:
         await socket.accept()
-        prompt_id = state["active"]
-        interrupted = False
-        for i in range(steps_per_prompt):
-            if state["interrupt"].is_set():
-                interrupted = True
-                break
-            await asyncio.sleep(delay)
-            await socket.send_json(
-                {
-                    "type": "progress",
-                    "data": {
-                        "prompt_id": prompt_id,
-                        "value": i + 1,
-                        "max": steps_per_prompt,
-                        "node": "sampler",
-                    },
-                }
-            )
-        if not interrupted:
-            await socket.send_json(
-                {"type": "executing", "data": {"prompt_id": prompt_id, "node": None}}
-            )
-        await socket.close()
+        sockets.add(socket)
+        try:
+            while True:
+                await socket.receive_text()
+        except WebSocketDisconnect:
+            pass
+        finally:
+            sockets.discard(socket)
 
     return app, rec

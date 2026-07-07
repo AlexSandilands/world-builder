@@ -22,27 +22,31 @@ async def demo_handler(ctx: JobContext) -> None:
 
     Checkpoint shape: {"completed": <count of finished steps>}. Resuming a
     partially-run job continues from that count rather than redoing work.
+
+    Cancellation is only observed between steps and at progress events — a
+    silent stream defers it. Real handlers (tile passes) must keep each step
+    short so a cancel never waits long.
     """
     total = int(ctx.spec.get("steps", 1))
     start = int(ctx.checkpoint.get("completed", 0))
 
     for step in range(start, total):
         ctx.check_cancelled()
-        prompt_id = await ctx.comfy.submit({"step": step})
-        async for update in ctx.comfy.stream_progress(prompt_id):
-            await ctx.emit(
-                {
-                    "type": "progress",
-                    "step": step,
-                    "value": update.value,
-                    "max": update.max,
-                }
-            )
-            if ctx.cancelled():
-                await ctx.comfy.interrupt()
-                ctx.check_cancelled()
-        outputs = await ctx.comfy.fetch_outputs(prompt_id)
-        await ctx.record_generation(prompt_id, outputs)
+        async with ctx.comfy.run_workflow({"step": step}) as run:
+            async for update in run.updates:
+                await ctx.emit(
+                    {
+                        "type": "progress",
+                        "step": step,
+                        "value": update.value,
+                        "max": update.max,
+                    }
+                )
+                if ctx.cancelled():
+                    await ctx.comfy.interrupt()
+                    ctx.check_cancelled()
+            outputs = await ctx.comfy.fetch_outputs(run.prompt_id)
+        await ctx.record_generation(run.prompt_id, outputs)
         ctx.checkpoint["completed"] = step + 1
         await ctx.save_checkpoint()
         await ctx.emit({"type": "step", "step": step, "completed": step + 1, "total": total})
