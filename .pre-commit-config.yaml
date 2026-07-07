@@ -1,0 +1,23 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.20
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^orchestrator/
+      - id: ruff-format
+        files: ^orchestrator/
+  - repo: local
+    hooks:
+      - id: eslint-frontend
+        name: eslint (frontend)
+        entry: bash -c 'cd frontend && npx eslint .'
+        language: system
+        files: ^frontend/.*\.tsx?$
+        pass_filenames: false
+      - id: prettier-frontend
+        name: prettier (frontend)
+        entry: bash -c 'cd frontend && npx prettier --check .'
+        language: system
+        files: ^frontend/
+        pass_filenames: false

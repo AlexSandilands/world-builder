@@ -8,9 +8,7 @@ Semantic city map generator: the user authors a city's *meaning* (regions, walls
 
 - `just dev` — orchestrator (:8000) + frontend (:5173) dev servers
 - `just test` / `just lint` — run before every PR; both must be green
-- `just codegen` — regenerate Pydantic + TypeScript types from the JSON Schema
-
-(Targets are implemented by #9; keep this list current as they land.)
+- `just codegen` — regenerate Pydantic + TypeScript types from the JSON Schema (needs `schema/` from #10)
 
 ## Hard rules
 
