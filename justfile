@@ -54,5 +54,5 @@ codegen:
         --input-file-type jsonschema \
         --output src/orchestrator/generated/project.py \
         --output-model-type pydantic_v2.BaseModel
-    cd frontend && npx json-schema-to-typescript ../schema/project.schema.json \
+    cd frontend && npx --no-install json2ts ../schema/project.schema.json \
         > src/generated/project.ts
