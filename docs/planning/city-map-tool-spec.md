@@ -147,6 +147,14 @@ Refinement is region-scoped and iterative, never start-over:
 
 **Phase 4 — Nice-to-haves.** Watabou/ProbableTrain import (as an alternative street/layout source), Foundry export, district zoom-in renders, style presets library.
 
+## 7. Success Criteria
+
+1. A 100k-population-scale city is authorable in an evening, not a month.
+2. Zooming to any neighbourhood shows *plausible, district-appropriate* detail — buildings front onto streets, districts are visually distinct, no repeated texture noise.
+3. A specific local edit ("this quarter burned down") is expressible in under a minute and regenerates without disturbing the rest of the map.
+4. No AI-generated text anywhere in the final artwork.
+5. Any historical output can be exactly reproduced from stored inputs.
+
 ## 8. Decisions (v0.2)
 
 Settled after review discussion, July 2026:
@@ -157,11 +165,3 @@ Settled after review discussion, July 2026:
 4. **SDXL vs Flux: decided by a Phase 0 bake-off**, not upfront. Regional-prompting mechanism likewise chosen from evidence (attention coupling, seg-colour assist, per-tile injection) — the seg-colour mask is assumed to be at best a weak assist; per-region/per-tile prompt injection is the primary mechanism.
 5. **Reproducibility criterion softened to pinned-environment reproducibility.** History stores workflow JSON, model/ControlNet hashes, seeds, and all conditioning inputs; bit-exact output is only guaranteed on the archived environment.
 6. **Iteration latency is a success criterion.** Draft (Pass 1) < ~2 min; single region regenerate < ~1 min on the reference 4090. Full tiled renders may take 1–2 h and must checkpoint per tile and resume after interruption.
-
-## 7. Success Criteria
-
-1. A 100k-population-scale city is authorable in an evening, not a month.
-2. Zooming to any neighbourhood shows *plausible, district-appropriate* detail — buildings front onto streets, districts are visually distinct, no repeated texture noise.
-3. A specific local edit ("this quarter burned down") is expressible in under a minute and regenerates without disturbing the rest of the map.
-4. No AI-generated text anywhere in the final artwork.
-5. Any historical output can be exactly reproduced from stored inputs.

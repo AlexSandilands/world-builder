@@ -25,7 +25,7 @@ Spec: `docs/planning/city-map-tool-spec.md` — §8 lists binding decisions. Wor
 
 | Touching | Read first |
 |---|---|
-| Generation jobs, ComfyUI workflows, tiling | `docs/architecture/OVERVIEW.md`, `docs/pipeline/DECISIONS.md` |
+| Generation jobs, ComfyUI workflows, tiling | `docs/architecture/OVERVIEW.md`, `docs/pipeline/DECISIONS.md` (pre-#8: `docs/pipeline/README.md`) |
 | Semantic compiler, street generator | `docs/architecture/OVERVIEW.md`, `docs/schema/README.md` |
 | Backend (any Python) | `docs/guidelines/python.md` |
 | Frontend (any TS/React) | `docs/guidelines/frontend.md`, `docs/design/README.md` |

@@ -10,7 +10,7 @@ Every issue on this board is written to be independently workable: it carries co
 ## 1. Gather context
 
 - `gh issue view NN` — read Context, Scope, **Acceptance criteria** (these are the definition of done), and Blocked by.
-- Read the *outcomes* of the blockers: experiment issues produce `experiments/*/RESULTS.md`; design issues produce docs. These files are the handoff — do not re-derive or contradict them. Pipeline settings always come from `docs/pipeline/DECISIONS.md`, never invented.
+- Read the *outcomes* of the blockers: experiment issues produce `experiments/*/RESULTS.md`; design issues produce docs. These files are the handoff — do not re-derive or contradict them. Pipeline settings always come from `docs/pipeline/DECISIONS.md`, never invented (that file exists once #8 closes; until then `docs/pipeline/README.md` states the interim rule).
 - Read the docs routed by CLAUDE.md's "Read before working" table for the area you're touching.
 - Check the issue for comments — re-scoping after Phase 0 lands as comments.
 
@@ -22,7 +22,7 @@ Every issue on this board is written to be independently workable: it carries co
 ## 3. Verify
 
 - Walk the acceptance criteria one by one. Each gets an automated test where feasible; anything verified manually (GPU output quality, visual checks) gets evidence in the PR body — commands run, results, screenshots/crops for image work.
-- `just lint` and `just test` green. For `needs-gpu` issues, run the real pipeline locally and report wall-clock times where the issue sets latency targets.
+- `just lint` and `just test` green. Bootstrap caveat: until #9 merges there is no justfile or CI — state that in the PR body and report the equivalent checks you ran manually. For `needs-gpu` issues, run the real pipeline locally and report wall-clock times where the issue sets latency targets.
 
 ## 4. PR
 
