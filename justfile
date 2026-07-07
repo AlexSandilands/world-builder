@@ -41,18 +41,22 @@ lint-frontend:
     cd frontend && npm run format
     cd frontend && npm run typecheck
 
-# Regenerate Pydantic + TypeScript types from schema/project.schema.json (lands with #10).
+# Regenerate Pydantic + TypeScript types from schema/project.schema.json.
 codegen:
     #!/usr/bin/env bash
     set -euo pipefail
-    if [ ! -f schema/project.schema.json ]; then
-        echo "schema/project.schema.json not found yet (see #10) — nothing to generate." >&2
-        exit 1
-    fi
-    cd orchestrator && uv run datamodel-codegen \
+    mkdir -p orchestrator/src/orchestrator/generated frontend/src/generated
+    (cd orchestrator && uv run datamodel-codegen \
         --input ../schema/project.schema.json \
         --input-file-type jsonschema \
         --output src/orchestrator/generated/project.py \
-        --output-model-type pydantic_v2.BaseModel
-    cd frontend && npx --no-install json2ts ../schema/project.schema.json \
-        > src/generated/project.ts
+        --output-model-type pydantic_v2.BaseModel \
+        --disable-timestamp)
+    # json-schema-to-typescript has no parser support for draft 2020-12
+    # `prefixItems` tuples (confirmed absent from its source/CHANGELOG as of
+    # its latest release, 15.0.4); it silently emits `never[]` for Vec2
+    # otherwise. scripts/schema_to_ts_compat.py rewrites those tuples to the
+    # legacy `items: [...]` form on a piped copy — the committed schema file
+    # is untouched.
+    python3 scripts/schema_to_ts_compat.py schema/project.schema.json \
+        | (cd frontend && npx --no-install json2ts > src/generated/project.ts)
