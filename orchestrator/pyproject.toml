@@ -11,6 +11,8 @@ dependencies = [
     "uvicorn[standard]>=0.38",
     "aiosqlite>=0.21",
     "pydantic>=2.11",
+    "httpx>=0.28",
+    "websockets>=13",
 ]
 
 [project.scripts]
@@ -47,7 +49,7 @@ pythonVersion = "3.12"
 # httpx/starlette TestClient stubs are only partially typed; don't demand
 # full inference in tests for that reason alone.
 executionEnvironments = [
-    { root = "tests", reportUnknownMemberType = false, reportUnknownVariableType = false },
+    { root = "tests", reportUnknownMemberType = false, reportUnknownVariableType = false, reportUnknownArgumentType = false, reportUnusedFunction = false },
 ]
 
 [tool.pytest.ini_options]
