@@ -22,4 +22,5 @@
 
 - Branch per issue: `issue/NN-short-slug`. PR title mirrors the issue title; body says `Closes #NN` and walks acceptance criteria with evidence.
 - Commits are small and buildable. Green `just lint` + `just test` before pushing.
+- `main` is protected by a ruleset (PRs + approval required). Because this is a single-account project, merging uses admin bypass (`gh pr merge --squash --admin`) — permitted only after the review-loop gates (reviewer verdict, CI, any `human-verify` checkpoint) have passed. Direct pushes to `main` only when the user explicitly sanctions one.
 - Experiment issues (#3–#7 pattern) deliver a `RESULTS.md` under `experiments/` — downstream issues consume those files, so write them for a reader with no session context.
