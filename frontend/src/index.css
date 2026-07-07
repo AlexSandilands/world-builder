@@ -1,10 +1,163 @@
+/* Placeholder styling for the canvas spike. Replaced by the design tokens
+   from #37 (docs/design/tokens.css); no token vocabulary exists yet, so these
+   are deliberately minimal literal values, not a parallel design system. */
+
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
   font:
-    16px/1.5 system-ui,
+    14px/1.5 system-ui,
     sans-serif;
+  --bg: #0f1116;
+  --panel: #171a21;
+  --line: #262b36;
+  --text: #e6e9ef;
+  --muted: #8b93a4;
+  --accent: #4fd1c5;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.app-header h1 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.app-subtitle {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.layer-panel {
+  width: 240px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  padding: 0.75rem;
+  overflow-y: auto;
+}
+
+.layer-panel h2 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+
+.layer-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.layer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.layer:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.layer.selected {
+  background: rgba(79, 209, 197, 0.14);
+  outline: 1px solid rgba(79, 209, 197, 0.4);
+}
+
+.layer-name {
+  flex: 1;
+  font-size: 0.85rem;
+}
+
+.layer-kind {
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.canvas-stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.canvas-host {
+  position: absolute;
+  inset: 0;
+}
+
+.canvas-host canvas {
+  display: block;
+  touch-action: none;
+}
+
+.toolbar {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  background: rgba(23, 26, 33, 0.86);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(6px);
+  font-size: 0.8rem;
+}
+
+.toolbar-title {
+  font-weight: 600;
+}
+
+.toolbar-readout {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.toolbar button {
+  font: inherit;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0.15rem 0.55rem;
+  cursor: pointer;
+}
+
+.toolbar button:hover {
+  border-color: var(--accent);
 }
