@@ -1,0 +1,51 @@
+[project]
+name = "orchestrator"
+version = "0.1.0"
+description = "World Builder pipeline orchestrator: FastAPI service driving the ComfyUI pipeline."
+authors = [
+    { name = "Alex Sandilands", email = "sandilands.alex@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.118",
+    "uvicorn[standard]>=0.38",
+    "aiosqlite>=0.21",
+    "pydantic>=2.11",
+]
+
+[project.scripts]
+orchestrator = "orchestrator:main"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14",
+    "pyright>=1.1.400",
+    "pytest>=8.4",
+    "pytest-asyncio>=0.26",
+    "httpx>=0.28",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.24,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pyright]
+include = ["src", "tests"]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+# httpx/starlette TestClient stubs are only partially typed; don't demand
+# full inference in tests for that reason alone.
+executionEnvironments = [
+    { root = "tests", reportUnknownMemberType = false, reportUnknownVariableType = false },
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
