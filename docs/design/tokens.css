@@ -1,0 +1,143 @@
+/* world-builder design tokens — issue #37.
+   Dark-first, dual-theme. Chrome is a warm neutral dark so the parchment
+   artwork carries the color; brass/ink/verdigris accents give the
+   cartographic character. The frontend consumes these variables directly —
+   UI code never hardcodes a value a token covers. */
+
+:root {
+  color-scheme: dark;
+
+  /* ── Surfaces (warm charcoal, never blue-gray: must harmonize with parchment art) */
+  --surface-canvas: #121110; /* app background, behind the map */
+  --surface-panel: #1a1816; /* docked panels, rails, header */
+  --surface-raised: #221f1b; /* floating toolbars, menus, dialogs */
+  --surface-inset: #0d0c0b; /* input wells, code/seed fields */
+  --surface-hover: rgba(232, 226, 214, 0.05);
+  --surface-active: rgba(232, 226, 214, 0.09);
+
+  /* ── Lines */
+  --line-soft: #2a2621;
+  --line-strong: #3a342c;
+  --line-focus: var(--accent-ink);
+
+  /* ── Text (warm off-whites — parchment-adjacent, not pure white) */
+  --text-primary: #e8e2d6;
+  --text-secondary: #a59b88;
+  --text-faint: #6e6558;
+  --text-on-accent: #16130d;
+  --text-brand: #d6b877;
+
+  /* ── Accents */
+  --accent-brass: #c9a45c; /* primary actions, active tool, progress */
+  --accent-brass-hover: #e0bd74;
+  --accent-brass-soft: rgba(201, 164, 92, 0.16);
+  --accent-ink: #58a6d4; /* selection, focus rings — cool ink reads over warm parchment */
+  --accent-ink-soft: rgba(88, 166, 212, 0.18);
+  --accent-verdigris: #5fa88c; /* success, completed generations */
+  --accent-seal: #c2554b; /* destructive, errors (wax-seal red) */
+  --accent-amber: #d98a3f; /* warnings, dirty-region indication */
+  --accent-amber-soft: rgba(217, 138, 63, 0.18);
+
+  /* ── Canvas overlay chrome (drawn over artwork — needs to read on parchment) */
+  --overlay-selection: var(--accent-ink);
+  --overlay-selection-fill: rgba(88, 166, 212, 0.12);
+  --overlay-dirty: var(--accent-amber);
+  --overlay-warning-fill: rgba(217, 138, 63, 0.2);
+  --overlay-handle: #f2ede2;
+  --overlay-scrim: rgba(18, 17, 16, 0.55);
+
+  /* ── Typography */
+  --font-ui:
+    'Inter', 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino', Georgia, serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --text-xs: 11px; /* badges, layer-kind tags, axis readouts */
+  --text-sm: 12px; /* panel body, list rows, inputs — the workhorse size */
+  --text-md: 13px; /* panel section titles, toolbar labels */
+  --text-lg: 15px; /* dialog titles */
+  --text-xl: 18px; /* screen titles */
+  --text-display: 26px; /* brand, empty states — always var(--font-display) */
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --tracking-caps: 0.07em; /* uppercase section labels */
+  --tracking-display: 0.015em;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* ── Spacing (4px grid, compact pro density) */
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
+  --space-9: 32px;
+
+  /* ── Layout */
+  --rail-width: 44px; /* icon tool rail */
+  --panel-width: 260px; /* layers / inspector docks */
+  --row-height: 26px; /* list rows, compact controls */
+  --control-height: 24px; /* buttons, inputs */
+  --header-height: 40px;
+
+  /* ── Radii */
+  --radius-control: 4px; /* buttons, inputs, list rows */
+  --radius-panel: 6px; /* cards, docked sections */
+  --radius-float: 8px; /* floating toolbars, menus, dialogs */
+  --radius-full: 999px; /* pills, status dots */
+
+  /* ── Elevation */
+  --shadow-float: 0 4px 16px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-dialog: 0 12px 40px rgba(0, 0, 0, 0.55);
+
+  /* ── Motion */
+  --motion-fast: 120ms ease-out;
+  --motion-normal: 200ms ease-out;
+}
+
+/* Light theme: parchment-tinted chrome. Same vocabulary, re-inked. */
+[data-theme='light'] {
+  color-scheme: light;
+
+  --surface-canvas: #e9e2d2;
+  --surface-panel: #f4efe3;
+  --surface-raised: #fbf7ed;
+  --surface-inset: #e2dac7;
+  --surface-hover: rgba(43, 38, 32, 0.05);
+  --surface-active: rgba(43, 38, 32, 0.09);
+
+  --line-soft: #d5cbb8;
+  --line-strong: #bfb29a;
+
+  --text-primary: #2b2620;
+  --text-secondary: #6e6355;
+  --text-faint: #9c9080;
+  --text-on-accent: #fbf7ed;
+  --text-brand: #7c5f28;
+
+  --accent-brass: #8a6d2f;
+  --accent-brass-hover: #6f5722;
+  --accent-brass-soft: rgba(138, 109, 47, 0.14);
+  --accent-ink: #2a6b94;
+  --accent-ink-soft: rgba(42, 107, 148, 0.14);
+  --accent-verdigris: #3d7a61;
+  --accent-seal: #a63d34;
+  --accent-amber: #a8641f;
+  --accent-amber-soft: rgba(168, 100, 31, 0.16);
+
+  --overlay-selection: var(--accent-ink);
+  --overlay-selection-fill: rgba(42, 107, 148, 0.1);
+  --overlay-dirty: var(--accent-amber);
+  --overlay-warning-fill: rgba(168, 100, 31, 0.16);
+  --overlay-handle: #2b2620;
+  --overlay-scrim: rgba(244, 239, 227, 0.6);
+
+  --shadow-float: 0 4px 16px rgba(43, 38, 32, 0.18), 0 1px 3px rgba(43, 38, 32, 0.12);
+  --shadow-dialog: 0 12px 40px rgba(43, 38, 32, 0.28);
+}
