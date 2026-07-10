@@ -3,7 +3,7 @@
 // every layer stays registered regardless of pan/zoom (frontend guideline:
 // "transforms applied at the viewport level only").
 
-import type { Point } from '../state/types'
+export type Point = { x: number; y: number }
 
 export type Viewport = {
   // Screen-pixel translation of the world origin.
