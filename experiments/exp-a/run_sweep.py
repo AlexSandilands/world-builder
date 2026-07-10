@@ -170,9 +170,12 @@ def build_run(
     strength: float,
     prompt_variant: str,
     control_variant: str,
+    end_percent: float | None = None,
 ) -> dict:
     control = CONTROL_IMAGES[control_variant]
     positive = PROMPT_VARIANTS[prompt_variant]
+    if end_percent is None:
+        end_percent = 1.0 if model == "sdxl" else 0.8
     if model == "sdxl":
         workflow = workflows.build_sdxl_workflow(
             control_image=control,
@@ -180,6 +183,7 @@ def build_run(
             negative=NEGATIVE_PROMPT,
             seed=seed,
             strength=strength,
+            end_percent=end_percent,
             filename_prefix=run_id,
         )
         model_files = SDXL_FILES
@@ -189,6 +193,7 @@ def build_run(
             positive=positive,
             seed=seed,
             strength=strength,
+            end_percent=end_percent,
             filename_prefix=run_id,
         )
         model_files = FLUX_FILES
@@ -197,6 +202,7 @@ def build_run(
         "model_family": model,
         "seed": seed,
         "control_strength": strength,
+        "control_end_percent": end_percent,
         "prompt_variant": prompt_variant,
         "positive_prompt": positive,
         "negative_prompt": NEGATIVE_PROMPT if model == "sdxl" else None,
@@ -247,6 +253,34 @@ def plan_runs(phase: str) -> list[dict]:
                             control_variant=control_variant,
                         )
                     )
+    if phase in ("followup", "all"):
+        # Probes motivated by the adherence sweep: Flux union-canny collapses
+        # to a flat embossed relief by strength 0.6, so search below it and
+        # with earlier cutoffs; SDXL inverts the dense grid into water/fields
+        # at >=0.6, so try releasing the control early instead of weakening it.
+        followups = [
+            ("flux", 0.2, 0.8),
+            ("flux", 0.3, 0.8),
+            ("flux", 0.4, 0.5),
+            ("flux", 0.6, 0.4),
+            ("sdxl", 0.8, 0.5),
+            ("sdxl", 1.0, 0.4),
+        ]
+        for model, strength, end in followups:
+            run_id = (
+                f"{model}_st{int(strength * 100):03d}_end{int(end * 100):03d}_s1001"
+            )
+            runs.append(
+                build_run(
+                    run_id,
+                    model,
+                    seed=1001,
+                    strength=strength,
+                    prompt_variant="base",
+                    control_variant="dense",
+                    end_percent=end,
+                )
+            )
     return runs
 
 
@@ -280,6 +314,7 @@ def execute_run(base_url: str, run: dict) -> None:
             "model_family",
             "seed",
             "control_strength",
+            "control_end_percent",
             "prompt_variant",
             "positive_prompt",
             "negative_prompt",
