@@ -5,10 +5,11 @@ from typing import Any
 
 from ..comfy import ComfyClient
 from ..errors import JobCancelled
+from ..history.repo import GenerationRecord, HistoryRepo
 from .events import EventBus
 from .handlers import get_handler
 from .repo import JobRepo
-from .state import JobContext, JobRecord, JobState
+from .state import GenerationInputs, JobContext, JobRecord, JobState
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +22,13 @@ class JobQueue:
     cooperative: a flag the running handler observes between units of work.
     """
 
-    def __init__(self, repo: JobRepo, events: EventBus, comfy: ComfyClient) -> None:
+    def __init__(
+        self, repo: JobRepo, events: EventBus, comfy: ComfyClient, history: HistoryRepo
+    ) -> None:
         self._repo = repo
         self._events = events
         self._comfy = comfy
+        self._history = history
         self._pending: asyncio.Queue[str] = asyncio.Queue()
         self._cancel_requested: set[str] = set()
         self._current: str | None = None
@@ -134,8 +138,27 @@ class JobQueue:
         async def save_checkpoint() -> None:
             await self._repo.save_checkpoint(record.id, record.checkpoint)
 
-        async def record_generation(prompt_id: str, outputs: dict[str, Any]) -> None:
-            await self._repo.add_generation(record.id, prompt_id, outputs)
+        async def record_generation(payload: GenerationInputs) -> GenerationRecord:
+            return await self._history.create(
+                job_id=record.id,
+                project_id=record.project_id,
+                parent_id=payload.parent_id,
+                prompt_id=payload.prompt_id,
+                project_snapshot_hash=payload.project_snapshot_hash,
+                workflow=payload.workflow,
+                inputs=payload.inputs,
+                outputs=payload.outputs,
+                seeds=payload.seeds,
+                settings=payload.settings,
+                model_hashes=payload.model_hashes,
+                environment=payload.environment,
+            )
+
+        async def put_blob(data: bytes) -> str:
+            return await self._history.blobs.put(data)
+
+        async def get_generation(generation_id: str) -> GenerationRecord | None:
+            return await self._history.get(generation_id)
 
         async def emit(event: dict[str, Any]) -> None:
             await self._events.publish(record.id, event)
@@ -148,6 +171,8 @@ class JobQueue:
             emit=emit,
             save_checkpoint=save_checkpoint,
             record_generation=record_generation,
+            put_blob=put_blob,
+            get_generation=get_generation,
             is_cancelled=lambda: record.id in self._cancel_requested,
         )
 

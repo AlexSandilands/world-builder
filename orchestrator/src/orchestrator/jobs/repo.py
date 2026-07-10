@@ -70,11 +70,3 @@ class JobRepo:
             (json.dumps(checkpoint), now_iso(), job_id),
         )
         await self._conn.commit()
-
-    async def add_generation(self, job_id: str, prompt_id: str, outputs: dict[str, Any]) -> None:
-        await self._conn.execute(
-            "INSERT INTO generations (id, job_id, prompt_id, outputs, created_at) "
-            "VALUES (?, ?, ?, ?, ?)",
-            (new_id(), job_id, prompt_id, json.dumps(outputs), now_iso()),
-        )
-        await self._conn.commit()
