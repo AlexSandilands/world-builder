@@ -131,6 +131,9 @@ class JobQueue:
             await self._repo.set_state(job_id, JobState.DONE)
             await self._emit_state(job_id, JobState.DONE)
         finally:
+            # Pins die with the job. By now every generation it recorded is
+            # committed, so its blobs are protected by row references instead.
+            self._history.unpin(job_id)
             self._cancel_requested.discard(job_id)
             self._current = None
 
@@ -155,10 +158,16 @@ class JobQueue:
             )
 
         async def put_blob(data: bytes) -> str:
-            return await self._history.blobs.put(data)
+            return await self._history.put_blob(record.id, data)
 
         async def get_generation(generation_id: str) -> GenerationRecord | None:
-            return await self._history.get(generation_id)
+            # Pin the fetched generation's blobs for the duration of the job:
+            # a reproduce run re-references them in its own record, and the
+            # source row may be deleted (GC'd) before that record commits.
+            source = await self._history.get(generation_id)
+            if source is not None:
+                self._history.pin(record.id, [*source.inputs.values(), *source.outputs.values()])
+            return source
 
         async def emit(event: dict[str, Any]) -> None:
             await self._events.publish(record.id, event)

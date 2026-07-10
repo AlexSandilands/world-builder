@@ -1,5 +1,6 @@
 import asyncio
 import hashlib
+from collections.abc import Callable
 from pathlib import Path
 from uuid import uuid4
 
@@ -10,11 +11,22 @@ class BlobStore:
 
     Writing identical bytes twice is a no-op after the first write, which is
     the dedupe guarantee masks/controls/outputs rely on across runs.
+
+    put and delete_if serialise on one lock: a GC unlink and a concurrent
+    write of the same digest must not interleave, or the file can vanish
+    after a writer was told it exists (see HistoryRepo's GC contract).
     """
 
     def __init__(self, root: Path) -> None:
         self._root = root
         self._root.mkdir(parents=True, exist_ok=True)
+        self._lock = asyncio.Lock()
+        for stray in self._root.glob("*/*.tmp"):
+            stray.unlink(missing_ok=True)
+
+    @staticmethod
+    def digest_of(data: bytes) -> str:
+        return hashlib.sha256(data).hexdigest()
 
     def path_for(self, digest: str) -> Path:
         return self._root / digest[:2] / digest
@@ -23,15 +35,24 @@ class BlobStore:
         return self.path_for(digest).exists()
 
     async def put(self, data: bytes) -> str:
-        digest = hashlib.sha256(data).hexdigest()
-        await asyncio.to_thread(self._write, digest, data)
+        digest = self.digest_of(data)
+        async with self._lock:
+            await asyncio.to_thread(self._write, digest, data)
         return digest
 
     async def get(self, digest: str) -> bytes:
         return await asyncio.to_thread(self.path_for(digest).read_bytes)
 
+    async def delete_if(self, digest: str, allowed: Callable[[], bool]) -> None:
+        """Unlink unless `allowed` (evaluated under the write lock) vetoes it.
+        The check must happen inside the lock so a pin taken just before a
+        write is visible to any GC decision ordered against that write."""
+        async with self._lock:
+            if allowed():
+                await asyncio.to_thread(self._delete, digest)
+
     async def delete(self, digest: str) -> None:
-        await asyncio.to_thread(self._delete, digest)
+        await self.delete_if(digest, lambda: True)
 
     async def list_digests(self) -> list[str]:
         return await asyncio.to_thread(self._list_digests)

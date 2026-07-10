@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Any
 
@@ -8,6 +9,10 @@ import aiosqlite
 
 from ..util import new_id, now_iso
 from .blobs import BlobStore
+
+
+def _blob_refs(record: GenerationRecord) -> set[str]:
+    return set(record.inputs.values()) | set(record.outputs.values())
 
 
 @dataclass(frozen=True)
@@ -50,11 +55,45 @@ def _record(row: aiosqlite.Row) -> GenerationRecord:
 class HistoryRepo:
     """Generation history: DB rows hold hashes/metadata only, never blob bytes
     (see docs/guidelines/python.md). `blobs` is the sole owner of file content;
-    callers hash bytes into it themselves and pass the resulting refs here."""
+    callers hash bytes into it themselves and pass the resulting refs here.
+
+    Blob GC safety: a blob is reclaimable only if it (a) was referenced by a
+    row being deleted right now, (b) is referenced by no surviving row, and
+    (c) is not pinned by an in-flight job. Restricting candidates to (a) means
+    a blob a running job just wrote — visible on disk, not yet in any row —
+    can never be collected out from under it; pins cover the remaining hole,
+    where a job re-references digests from an existing generation (reproduce)
+    that gets deleted mid-run. Cost: a blob orphaned by a crash between
+    put_blob and record_generation is never reclaimed — leaked disk, not a
+    corrupted record, which is the right side of the trade.
+    """
 
     def __init__(self, conn: aiosqlite.Connection, blobs: BlobStore) -> None:
         self._conn = conn
         self.blobs = blobs
+        self._pins: dict[str, set[str]] = {}
+
+    def pin(self, owner_id: str, digests: Iterable[str]) -> None:
+        self._pins.setdefault(owner_id, set()).update(digests)
+
+    def unpin(self, owner_id: str) -> None:
+        self._pins.pop(owner_id, None)
+
+    async def put_blob(self, owner_id: str, data: bytes) -> str:
+        """Write a blob pinned to `owner_id`. The pin lands before the write:
+        GC re-checks pins under the blob store's write lock, so once this
+        returns the file cannot be unlinked until the owner unpins — even if
+        the digest collides (dedupe) with one a concurrent delete is reclaiming.
+        """
+        digest = BlobStore.digest_of(data)
+        self.pin(owner_id, [digest])
+        return await self.blobs.put(data)
+
+    def _pinned(self) -> set[str]:
+        pinned: set[str] = set()
+        for digests in self._pins.values():
+            pinned |= digests
+        return pinned
 
     async def create(
         self,
@@ -120,16 +159,16 @@ class HistoryRepo:
         return [_record(row) for row in await cursor.fetchall()]
 
     async def delete(self, generation_id: str) -> bool:
-        """Delete one generation row and reclaim any blob it referenced that no
-        other generation still points to. Children are re-parented to None
-        rather than cascaded, so deleting a mid-tree node cannot silently drop
-        its descendants' history."""
-        cursor = await self._conn.execute("DELETE FROM generations WHERE id = ?", (generation_id,))
+        """Delete one generation row and reclaim its now-unreferenced, unpinned
+        blobs. Children are re-parented to None rather than cascaded, so
+        deleting a mid-tree node cannot silently drop its descendants' history."""
+        record = await self.get(generation_id)
+        if record is None:
+            return False
+        await self._conn.execute("DELETE FROM generations WHERE id = ?", (generation_id,))
         await self._conn.commit()
-        deleted = cursor.rowcount > 0
-        if deleted:
-            await self._gc_blobs()
-        return deleted
+        await self._gc_blobs(_blob_refs(record))
+        return True
 
     async def prune(self, project_id: str, keep: int) -> list[str]:
         """Delete all but the `keep` most recent generations for a project,
@@ -141,15 +180,23 @@ class HistoryRepo:
             placeholders = ",".join("?" for _ in ids)
             await self._conn.execute(f"DELETE FROM generations WHERE id IN ({placeholders})", ids)
             await self._conn.commit()
-            await self._gc_blobs()
+            candidates: set[str] = set()
+            for record in to_delete:
+                candidates |= _blob_refs(record)
+            await self._gc_blobs(candidates)
         return ids
 
-    async def _gc_blobs(self) -> None:
+    async def _gc_blobs(self, candidates: set[str]) -> None:
+        candidates = candidates - self._pinned()
+        if not candidates:
+            return
         cursor = await self._conn.execute("SELECT inputs, outputs FROM generations")
-        referenced: set[str] = set()
         for row in await cursor.fetchall():
-            referenced.update(json.loads(row["inputs"]).values())
-            referenced.update(json.loads(row["outputs"]).values())
-        for digest in await self.blobs.list_digests():
-            if digest not in referenced:
-                await self.blobs.delete(digest)
+            candidates -= set(json.loads(row["inputs"]).values())
+            candidates -= set(json.loads(row["outputs"]).values())
+            if not candidates:
+                return
+        for digest in candidates:
+            # Pins are re-checked per unlink, under the blob write lock: a job
+            # may have pinned this digest while the scan above was awaiting.
+            await self.blobs.delete_if(digest, lambda d=digest: d not in self._pinned())

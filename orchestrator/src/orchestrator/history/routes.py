@@ -1,4 +1,6 @@
-from fastapi import APIRouter, HTTPException, Request, Response
+from typing import Annotated
+
+from fastapi import APIRouter, HTTPException, Path, Request, Response
 
 from ..jobs.queue import JobQueue
 from ..jobs.repo import JobRepo
@@ -74,7 +76,9 @@ async def delete_generation(generation_id: str, request: Request) -> Response:
 
 
 @router.get("/api/blobs/{digest}")
-async def get_blob(digest: str, request: Request) -> Response:
+async def get_blob(
+    digest: Annotated[str, Path(pattern=r"^[0-9a-f]{64}$")], request: Request
+) -> Response:
     try:
         data = await _repo(request).blobs.get(digest)
     except FileNotFoundError:
