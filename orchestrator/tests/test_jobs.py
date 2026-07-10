@@ -10,6 +10,8 @@ from orchestrator.app import create_app
 from orchestrator.comfy import ComfyClient
 from orchestrator.config import Settings
 from orchestrator.db import connect
+from orchestrator.history.blobs import BlobStore
+from orchestrator.history.repo import HistoryRepo
 from orchestrator.jobs import handlers
 from orchestrator.jobs.events import EventBus
 from orchestrator.jobs.queue import JobQueue
@@ -25,6 +27,7 @@ def _settings(db_path: str, comfy_port: int) -> Settings:
         db_path=db_path,
         comfy_url=f"http://127.0.0.1:{comfy_port}",
         comfy_ws_url=f"ws://127.0.0.1:{comfy_port}",
+        blob_root=str(Path(db_path).parent / "blobs"),
     )
 
 
@@ -113,7 +116,8 @@ async def test_cancel_while_queued_then_resume_runs_once(tmp_path: Path) -> None
     conn = await connect(str(tmp_path / "requeue.db"))
     repo = JobRepo(conn)
     comfy = ComfyClient("http://127.0.0.1:1", "ws://127.0.0.1:1")
-    queue = JobQueue(repo, EventBus(), comfy)
+    history = HistoryRepo(conn, BlobStore(tmp_path / "blobs"))
+    queue = JobQueue(repo, EventBus(), comfy, history)
 
     executions: list[str] = []
 

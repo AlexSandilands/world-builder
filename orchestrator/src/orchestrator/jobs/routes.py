@@ -6,7 +6,8 @@ from ..models import Job, JobCreate
 from .events import EventBus
 from .queue import JobQueue
 from .repo import JobRepo
-from .state import RESUMABLE, TERMINAL, JobRecord
+from .state import RESUMABLE, TERMINAL
+from .state import to_model as _to_model
 
 router = APIRouter(prefix="/api/jobs", tags=["jobs"])
 
@@ -19,20 +20,6 @@ def _repo(request: Request) -> JobRepo:
 
 def _queue(request: Request) -> JobQueue:
     return request.app.state.queue
-
-
-def _to_model(record: JobRecord) -> Job:
-    return Job(
-        id=record.id,
-        project_id=record.project_id,
-        kind=record.kind,
-        state=record.state.value,
-        spec=record.spec,
-        checkpoint=record.checkpoint,
-        error=record.error,
-        created_at=record.created_at,
-        updated_at=record.updated_at,
-    )
 
 
 @router.post("", response_model=Job, status_code=201)

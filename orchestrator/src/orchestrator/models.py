@@ -40,3 +40,31 @@ class Job(BaseModel):
     error: str | None
     created_at: str
     updated_at: str
+
+
+class GenerationSummary(BaseModel):
+    id: str
+    job_id: str | None
+    project_id: str | None
+    parent_id: str | None
+    prompt_id: str | None
+    created_at: str
+
+
+class Generation(GenerationSummary):
+    project_snapshot_hash: str | None
+    workflow: dict[str, Any]
+    inputs: dict[str, str]
+    outputs: dict[str, str]
+    seeds: dict[str, Any]
+    settings: dict[str, Any]
+    model_hashes: dict[str, Any]
+    environment: dict[str, Any]
+
+
+class PruneRequest(BaseModel):
+    keep: int = Field(ge=0)
+
+
+class PruneResult(BaseModel):
+    deleted: list[str]

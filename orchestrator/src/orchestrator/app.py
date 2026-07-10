@@ -1,11 +1,15 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import APIRouter, FastAPI
 
 from .comfy import ComfyClient
 from .config import Settings, load_settings
 from .db import connect
+from .history.blobs import BlobStore
+from .history.repo import HistoryRepo
+from .history.routes import router as history_router
 from .jobs import handlers
 from .jobs.events import EventBus
 from .jobs.queue import JobQueue
@@ -31,13 +35,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     )
     events = EventBus()
     jobs_repo = JobRepo(conn)
-    queue = JobQueue(jobs_repo, events, comfy)
+    blobs = BlobStore(Path(settings.blob_root))
+    history_repo = HistoryRepo(conn, blobs)
+    queue = JobQueue(jobs_repo, events, comfy, history_repo)
 
     app.state.db = conn
     app.state.comfy = comfy
     app.state.events = events
     app.state.projects_repo = ProjectRepo(conn)
     app.state.jobs_repo = jobs_repo
+    app.state.history_repo = history_repo
     app.state.queue = queue
 
     await queue.start()
@@ -57,6 +64,7 @@ def create_app(settings: Settings | None = None, comfy: ComfyClient | None = Non
     app.include_router(health_router)
     app.include_router(projects_router)
     app.include_router(jobs_router)
+    app.include_router(history_router)
     return app
 
 

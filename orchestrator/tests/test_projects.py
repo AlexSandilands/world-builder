@@ -12,6 +12,7 @@ def _app(tmp_path: Path) -> FastAPI:
         db_path=str(tmp_path / "projects.db"),
         comfy_url="http://127.0.0.1:1",
         comfy_ws_url="ws://127.0.0.1:1",
+        blob_root=str(tmp_path / "blobs"),
     )
     return create_app(settings=settings)
 
