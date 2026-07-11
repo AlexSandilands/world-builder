@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type ToolId = 'select' | 'lasso' | 'rect' | 'ellipse'
+export type ToolId = 'select' | 'hand' | 'lasso' | 'rect' | 'ellipse'
 
 // UI-only editor state: active tool, selection, and per-layer view flags.
 // None of this is project data — it never serialises into the document.

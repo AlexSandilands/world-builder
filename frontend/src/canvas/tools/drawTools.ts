@@ -7,7 +7,9 @@ import { useProjectStore } from '../../state/projectStore'
 import type { Draft, PointerInfo, Tool, ToolContext } from './toolTypes'
 
 const LASSO_SAMPLE_PX = 2
-const LASSO_SIMPLIFY_PX = 1.5
+// RDP tolerance in screen pixels: large enough to absorb hand tremor so a
+// freehand stroke commits as a clean ring, not a jagged one.
+const LASSO_SIMPLIFY_PX = 4
 const MIN_DRAG_PX = 4
 
 function commitRegion(geometry: Region['geometry']): void {

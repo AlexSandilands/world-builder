@@ -137,6 +137,19 @@ describe('lasso simplification and snapping', () => {
     ])
   })
 
+  test('a jittery freehand edge collapses at a realistic epsilon', () => {
+    // A near-straight drag sampled with sub-epsilon hand tremor: RDP should
+    // reduce it to a handful of vertices, not keep every wobble.
+    const samples = Array.from({ length: 40 }, (_, i) => ({
+      x: i * 5,
+      y: i % 2 === 0 ? 0 : 3,
+    }))
+    const simplified = simplifyPolyline(samples, 4)
+    expect(simplified.length).toBeLessThanOrEqual(3)
+    expect(simplified[0]).toEqual({ x: 0, y: 0 })
+    expect(simplified.at(-1)).toEqual({ x: 195, y: 3 })
+  })
+
   test('snaps to another region vertex within tolerance only', () => {
     const candidates = [{ id: 'other', geometry: square }]
     expect(snapToVertex(candidates, 'self', { x: 98, y: 3 }, 5)).toEqual({ x: 100, y: 0 })

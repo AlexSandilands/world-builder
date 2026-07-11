@@ -6,11 +6,13 @@ export type PointerInfo = {
   altKey: boolean
 }
 
-// In-progress drawing geometry, rendered by VectorLayer until committed.
+// In-progress drawing geometry (and the select tool's marquee), rendered by
+// VectorLayer until committed.
 export type Draft =
   | { kind: 'lasso'; points: XY[] }
   | { kind: 'rect'; a: XY; b: XY }
   | { kind: 'ellipse'; a: XY; b: XY }
+  | { kind: 'marquee'; a: XY; b: XY }
 
 // What tools need from the canvas: screen-tolerance conversion and draft
 // display. Document/selection access goes straight to the zustand stores —

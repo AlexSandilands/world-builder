@@ -77,6 +77,13 @@ describe('command apply/undo round-trips', () => {
   test('replaceRegionCommand returns null for unknown ids', () => {
     expect(replaceRegionCommand(projectWith(), 'ghost', { z: 1 })).toBeNull()
   })
+
+  test('replaceRegionCommand rounds a fractional z (schema v1 requires integer)', () => {
+    const p = projectWith(region('a', 0))
+    const cmd = replaceRegionCommand(p, 'a', { z: 1.5 })!
+    expect(cmd.changes[0].after.z).toBe(2)
+    expect(applyCommand(p, cmd).regions[0].z).toBe(2)
+  })
 })
 
 describe('stacking order and reorder', () => {

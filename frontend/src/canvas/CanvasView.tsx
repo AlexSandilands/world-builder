@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useViewportStore } from '../state/viewportStore'
+import { CanvasContextMenu } from '../ui/CanvasContextMenu'
+import type { ContextMenuRequest } from './CanvasController'
 import { CanvasController } from './CanvasController'
 
 // Thin React wrapper: mounts the imperative Pixi controller into a div. The
@@ -10,13 +12,15 @@ export function CanvasView() {
   const hostRef = useRef<HTMLDivElement>(null)
   const controllerRef = useRef<CanvasController | null>(null)
   const fitNonce = useViewportStore((s) => s.fitNonce)
+  const [menu, setMenu] = useState<ContextMenuRequest | null>(null)
 
   useEffect(() => {
     const host = hostRef.current
     if (!host) return
     let cancelled = false
-    const controller = new CanvasController((zoom, tiles) =>
-      useViewportStore.getState().setReadout(zoom, tiles),
+    const controller = new CanvasController(
+      (zoom, tiles) => useViewportStore.getState().setReadout(zoom, tiles),
+      (request) => setMenu(request),
     )
     // WebGL is unavailable under jsdom; a failed init must not crash the app
     // shell (unit tests render this component headless).
@@ -42,5 +46,10 @@ export function CanvasView() {
     if (fitNonce > 0) controllerRef.current?.fit()
   }, [fitNonce])
 
-  return <div ref={hostRef} className="canvas-host" data-testid="canvas-host" />
+  return (
+    <>
+      <div ref={hostRef} className="canvas-host" data-testid="canvas-host" />
+      {menu && <CanvasContextMenu request={menu} onClose={() => setMenu(null)} />}
+    </>
+  )
 }

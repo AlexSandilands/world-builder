@@ -4,6 +4,7 @@ import { createDefaultProject } from '../../state/defaultProject'
 import { useEditorStore } from '../../state/editorStore'
 import { useHistoryStore } from '../../state/historyStore'
 import { useProjectStore } from '../../state/projectStore'
+import { deleteRegionVertex } from '../../features/regions/actions'
 import { BoxTool, LassoTool } from './drawTools'
 import { SelectTool } from './selectTool'
 import type { PointerInfo, ToolContext } from './toolTypes'
@@ -130,7 +131,7 @@ describe('draw tools', () => {
 })
 
 describe('select tool', () => {
-  test('click selects topmost by stacking order; empty click clears and pans', () => {
+  test('click selects topmost by stacking order; empty click clears', () => {
     addRegion(squareAt('bottom', 0, 0, 0))
     addRegion(squareAt('top', 50, 50, 5))
     const select = new SelectTool()
@@ -138,8 +139,58 @@ describe('select tool', () => {
     select.onUp()
     expect(useEditorStore.getState().selectedRegionIds).toEqual(['top'])
 
-    expect(select.onDown(at(500, 500), ctx)).toBe(false)
+    // Empty canvas begins a marquee; a press with no drag clears the selection.
+    expect(select.onDown(at(500, 500), ctx)).toBe(true)
+    select.onUp()
     expect(useEditorStore.getState().selectedRegionIds).toEqual([])
+  })
+
+  test('marquee drag selects every region it intersects', () => {
+    addRegion(squareAt('a', 0, 0))
+    addRegion(squareAt('b', 200, 0))
+    addRegion(squareAt('far', 1000, 1000))
+    const select = new SelectTool()
+    expect(select.onDown(at(-10, -10), ctx)).toBe(true)
+    select.onMove(at(320, 120), ctx)
+    select.onUp(at(320, 120), ctx)
+    expect([...useEditorStore.getState().selectedRegionIds].sort()).toEqual(['a', 'b'])
+  })
+
+  test('shift marquee adds to the existing selection', () => {
+    addRegion(squareAt('a', 0, 0))
+    addRegion(squareAt('b', 200, 0))
+    useEditorStore.getState().select(['a'])
+    const select = new SelectTool()
+    select.onDown(at(150, -10, { shiftKey: true }), ctx)
+    select.onMove(at(320, 120), ctx)
+    select.onUp(at(320, 120), ctx)
+    expect([...useEditorStore.getState().selectedRegionIds].sort()).toEqual(['a', 'b'])
+  })
+
+  test('deleteRegionVertex drops a vertex as a single undo step', () => {
+    addRegion({
+      id: 'p',
+      type: 'water',
+      z: 0,
+      geometry: {
+        kind: 'polygon',
+        points: [
+          [0, 0],
+          [100, 0],
+          [50, 5],
+          [100, 100],
+          [0, 100],
+        ],
+      },
+    })
+    deleteRegionVertex('p', 2)
+    const geometry = regions()[0].geometry
+    expect(geometry.kind === 'polygon' && geometry.points).toHaveLength(4)
+    expect(useHistoryStore.getState().past).toHaveLength(2) // add + delete-vertex
+
+    useProjectStore.getState().undo()
+    const restored = regions()[0].geometry
+    expect(restored.kind === 'polygon' && restored.points).toHaveLength(5)
   })
 
   test('shift-click toggles membership in a multi-selection', () => {

@@ -1,6 +1,7 @@
 import type { Geometry, Region } from '../../generated/project'
-import type { XY } from '../../features/regions/geometry'
+import type { Bounds, XY } from '../../features/regions/geometry'
 import {
+  boundsOf,
   deletePolygonVertex,
   insertPolygonVertex,
   snapToVertex,
@@ -22,11 +23,13 @@ const CLICK_SLOP_PX = 3
 type DragState =
   | { mode: 'translate'; start: XY; before: Map<string, Geometry>; moved: boolean; hitId: string }
   | { mode: 'handle'; regionId: string; handle: Handle; before: Geometry; moved: boolean }
+  | { mode: 'marquee'; start: XY; to: XY; moved: boolean; additive: boolean }
 
-// Selection and geometry editing: click/shift-click select, drag to translate
-// the selection, drag handles to move vertices or scale, alt-click deletes a
-// vertex, double-click an edge inserts one. Drags preview transiently and
-// commit exactly one undoable command on release.
+// Selection and geometry editing: click/shift-click select, drag empty canvas
+// to rubber-band marquee, drag a region to translate the selection, drag
+// handles to move vertices or scale, alt-click deletes a vertex, double-click
+// an edge inserts one. Drags preview transiently and commit exactly one
+// undoable command on release.
 export class SelectTool implements Tool {
   private drag: DragState | null = null
 
@@ -70,8 +73,16 @@ export class SelectTool implements Tool {
           return true
         }
       }
-      if (!e.shiftKey) editor.clearSelection()
-      return false
+      // Empty canvas: begin a marquee. A plain click (no drag) clears the
+      // selection on release; a drag rubber-band selects.
+      this.drag = {
+        mode: 'marquee',
+        start: e.world,
+        to: e.world,
+        moved: false,
+        additive: e.shiftKey,
+      }
+      return true
     }
     if (e.shiftKey) {
       editor.toggleSelected(hit.id)
@@ -90,6 +101,16 @@ export class SelectTool implements Tool {
     const drag = this.drag
     if (!drag) return
     const slop = CLICK_SLOP_PX / ctx.scale()
+
+    if (drag.mode === 'marquee') {
+      drag.to = e.world
+      if (!drag.moved && Math.hypot(e.world.x - drag.start.x, e.world.y - drag.start.y) < slop) {
+        return
+      }
+      drag.moved = true
+      ctx.setDraft({ kind: 'marquee', a: drag.start, b: e.world })
+      return
+    }
 
     if (drag.mode === 'translate') {
       const dx = e.world.x - drag.start.x
@@ -112,11 +133,17 @@ export class SelectTool implements Tool {
       .previewGeometry(drag.regionId, applyHandleDrag(drag.before, drag.handle, target))
   }
 
-  onUp(): void {
+  onUp(_e?: PointerInfo, ctx?: ToolContext): void {
     const drag = this.drag
     this.drag = null
     if (!drag) return
     const { project, record } = useProjectStore.getState()
+
+    if (drag.mode === 'marquee') {
+      ctx?.setDraft(null)
+      this.commitMarquee(drag)
+      return
+    }
 
     if (!drag.moved) {
       // Plain click (no drag) on a region inside a multi-selection collapses
@@ -150,16 +177,42 @@ export class SelectTool implements Tool {
     this.dispatchGeometry(region.id, insertPolygonVertex(region.geometry, segmentIndex, e.world))
   }
 
-  cancel(): void {
+  cancel(ctx?: ToolContext): void {
     const drag = this.drag
     this.drag = null
-    if (!drag || !drag.moved) return
+    if (!drag) return
+    if (drag.mode === 'marquee') {
+      ctx?.setDraft(null)
+      return
+    }
+    if (!drag.moved) return
     const preview = useProjectStore.getState().previewGeometry
     if (drag.mode === 'translate') {
       for (const [id, geometry] of drag.before) preview(id, geometry)
     } else {
       preview(drag.regionId, drag.before)
     }
+  }
+
+  private commitMarquee(drag: Extract<DragState, { mode: 'marquee' }>): void {
+    const editor = useEditorStore.getState()
+    if (!drag.moved) {
+      // A plain empty click deselects (unless shift-held for additive intent).
+      if (!drag.additive) editor.clearSelection()
+      return
+    }
+    const rect = marqueeBounds(drag.start, drag.to)
+    const inside = useProjectStore
+      .getState()
+      .project.regions.filter((r) => boundsIntersect(boundsOf(r.geometry), rect))
+      .map((r) => r.id)
+    if (!drag.additive) {
+      editor.select(inside)
+      return
+    }
+    const merged = [...editor.selectedRegionIds]
+    for (const id of inside) if (!merged.includes(id)) merged.push(id)
+    editor.select(merged)
   }
 
   private handleAt(g: Geometry, p: XY, tolerance: number): Handle | null {
@@ -181,4 +234,17 @@ export class SelectTool implements Tool {
     const cmd = replaceRegionCommand(project, id, { geometry })
     if (cmd) dispatch(cmd)
   }
+}
+
+function marqueeBounds(a: XY, b: XY): Bounds {
+  return {
+    minX: Math.min(a.x, b.x),
+    minY: Math.min(a.y, b.y),
+    maxX: Math.max(a.x, b.x),
+    maxY: Math.max(a.y, b.y),
+  }
+}
+
+function boundsIntersect(a: Bounds, b: Bounds): boolean {
+  return a.minX <= b.maxX && a.maxX >= b.minX && a.minY <= b.maxY && a.maxY >= b.minY
 }

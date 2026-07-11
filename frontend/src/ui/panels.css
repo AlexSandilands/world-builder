@@ -188,6 +188,8 @@
   background: var(--surface-panel);
   padding: var(--space-3);
   overflow-y: auto;
+  /* Docked panel scrolls vertically only — never sideways. */
+  overflow-x: hidden;
 }
 
 .inspector-body {
@@ -197,6 +199,9 @@
   margin: 0;
   padding: 0 var(--space-3);
   border: none;
+  /* <fieldset> defaults to min-width: min-content, which refuses to shrink
+     and overflows the panel; reset it so children govern the width. */
+  min-width: 0;
 }
 
 .inspector-body:disabled {
@@ -306,11 +311,18 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  min-width: 0;
 }
 
 .z-controls input[type='text'] {
+  flex: 1 1 44px;
   width: 44px;
+  min-width: 0;
   font-family: var(--font-mono);
+}
+
+.z-controls button {
+  flex-shrink: 0;
 }
 
 .z-controls button,

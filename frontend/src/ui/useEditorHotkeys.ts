@@ -4,7 +4,13 @@ import type { ToolId } from '../state/editorStore'
 import { useEditorStore } from '../state/editorStore'
 import { useProjectStore } from '../state/projectStore'
 
-const TOOL_KEYS: Record<string, ToolId> = { v: 'select', l: 'lasso', r: 'rect', e: 'ellipse' }
+const TOOL_KEYS: Record<string, ToolId> = {
+  v: 'select',
+  h: 'hand',
+  l: 'lasso',
+  r: 'rect',
+  e: 'ellipse',
+}
 
 function isTypingTarget(target: EventTarget | null): boolean {
   return (

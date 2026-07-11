@@ -1,4 +1,7 @@
 import { Application, Container } from 'pixi.js'
+import type { XY } from '../features/regions/geometry'
+import { handlesFor } from '../features/regions/handles'
+import { topRegionAt } from '../features/regions/hitTest'
 import type { ToolId } from '../state/editorStore'
 import { useEditorStore } from '../state/editorStore'
 import { useProjectStore } from '../state/projectStore'
@@ -13,6 +16,37 @@ import { SelectTool } from './tools/selectTool'
 import type { Draft, PointerInfo, Tool, ToolContext } from './tools/toolTypes'
 
 type Readout = (zoomPercent: number, residentTiles: number) => void
+
+// A right-click hit, handed to React so it can render the canvas context menu.
+// `regionId`/`vertexIndex` are null when nothing actionable is under the cursor.
+export type ContextMenuRequest = {
+  x: number
+  y: number
+  regionId: string | null
+  vertexIndex: number | null
+}
+
+type ContextMenuHandler = (request: ContextMenuRequest) => void
+
+const VERTEX_HIT_PX = 7
+
+// The hand tool pans; the controller's pan gesture does the work, so the tool
+// itself consumes nothing.
+const HAND_TOOL: Tool = {
+  onDown: () => false,
+  onMove: () => {},
+  onUp: () => {},
+  cancel: () => {},
+}
+
+// Space is the temporary-pan key only when not typing into a field.
+function isTypingTarget(el: Element | null): boolean {
+  return (
+    el instanceof HTMLInputElement ||
+    el instanceof HTMLTextAreaElement ||
+    (el instanceof HTMLElement && el.isContentEditable)
+  )
+}
 
 // Owns the PixiJS scene graph: one `world` container (the shared canvas-unit
 // coordinate system) holding the artwork tile pyramid at the bottom and the
@@ -30,11 +64,14 @@ export class CanvasController {
   private draft: Draft | null = null
   private panning = false
   private toolDragging = false
+  private spaceHeld = false
   private last = { x: 0, y: 0 }
   private disposers: Array<() => void> = []
   private readonly onReadout: Readout
+  private readonly onContextMenu: ContextMenuHandler
   private readonly tools: Record<ToolId, Tool> = {
     select: new SelectTool(),
+    hand: HAND_TOOL,
     lasso: new LassoTool(),
     rect: new BoxTool('rect'),
     ellipse: new BoxTool('ellipse'),
@@ -47,8 +84,9 @@ export class CanvasController {
     },
   }
 
-  constructor(onReadout: Readout) {
+  constructor(onReadout: Readout, onContextMenu: ContextMenuHandler = () => {}) {
     this.onReadout = onReadout
+    this.onContextMenu = onContextMenu
   }
 
   async mount(parent: HTMLElement): Promise<void> {
@@ -81,7 +119,10 @@ export class CanvasController {
     this.disposers.push(useProjectStore.subscribe(() => this.renderVectors()))
     this.disposers.push(
       useEditorStore.subscribe((state, prev) => {
-        if (state.tool !== prev.tool) this.cancelActive(prev.tool)
+        if (state.tool !== prev.tool) {
+          this.cancelActive(prev.tool)
+          this.updateCursor()
+        }
         this.renderVectors()
       }),
     )
@@ -110,6 +151,21 @@ export class CanvasController {
     }
   }
 
+  // Pan when the gesture is a pan gesture: middle-drag always, or a left-drag
+  // with the hand tool active or space held (the standard temporary-pan key).
+  private isPanGesture(e: PointerEvent): boolean {
+    if (e.button === 1) return true
+    if (e.button !== 0) return false
+    return this.spaceHeld || useEditorStore.getState().tool === 'hand'
+  }
+
+  private updateCursor(): void {
+    const style = this.app.canvas.style
+    if (this.panning) style.cursor = 'grabbing'
+    else if (this.spaceHeld || useEditorStore.getState().tool === 'hand') style.cursor = 'grab'
+    else style.cursor = ''
+  }
+
   private bindInput(): void {
     const canvas = this.app.canvas
     const onWheel = (e: WheelEvent) => {
@@ -119,15 +175,19 @@ export class CanvasController {
       this.apply()
     }
     const onDown = (e: PointerEvent) => {
+      // Right button is reserved for the context menu (contextmenu event).
+      if (e.button === 2) return
       canvas.setPointerCapture(e.pointerId)
       this.last = { x: e.clientX, y: e.clientY }
-      // Middle/right button always pans; left offers the event to the tool.
+      if (this.isPanGesture(e)) {
+        this.panning = true
+        this.updateCursor()
+        return
+      }
       if (e.button === 0 && this.activeTool().onDown(this.pointerInfo(e), this.toolContext)) {
         this.toolDragging = true
         this.renderVectors()
-        return
       }
-      this.panning = true
     }
     const onMove = (e: PointerEvent) => {
       if (this.toolDragging) {
@@ -146,14 +206,32 @@ export class CanvasController {
         this.renderVectors()
       }
       this.panning = false
+      this.updateCursor()
     }
     const onDoubleClick = (e: MouseEvent) => {
       this.activeTool().onDoubleClick?.(this.pointerInfo(e), this.toolContext)
     }
+    const onContextMenu = (e: MouseEvent) => {
+      e.preventDefault()
+      this.openContextMenu(e)
+    }
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return
-      this.cancelActive(useEditorStore.getState().tool)
-      this.renderVectors()
+      if (e.key === 'Escape') {
+        this.cancelActive(useEditorStore.getState().tool)
+        this.renderVectors()
+        return
+      }
+      if (e.code === 'Space' && !this.spaceHeld && !isTypingTarget(document.activeElement)) {
+        e.preventDefault()
+        this.spaceHeld = true
+        this.updateCursor()
+      }
+    }
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && this.spaceHeld) {
+        this.spaceHeld = false
+        this.updateCursor()
+      }
     }
     const onResize = () => this.apply()
 
@@ -163,7 +241,9 @@ export class CanvasController {
     canvas.addEventListener('pointerup', onUp)
     canvas.addEventListener('pointerleave', onUp)
     canvas.addEventListener('dblclick', onDoubleClick)
+    canvas.addEventListener('contextmenu', onContextMenu)
     window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
     this.app.renderer.on('resize', onResize)
     this.disposers.push(() => {
       canvas.removeEventListener('wheel', onWheel)
@@ -172,9 +252,53 @@ export class CanvasController {
       canvas.removeEventListener('pointerup', onUp)
       canvas.removeEventListener('pointerleave', onUp)
       canvas.removeEventListener('dblclick', onDoubleClick)
+      canvas.removeEventListener('contextmenu', onContextMenu)
       window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
       this.app.renderer.off('resize', onResize)
     })
+  }
+
+  // Right-click selects the region under the cursor (so the menu acts on it)
+  // and reports what actions apply: vertex deletion when on a vertex of the
+  // lone selected polygon, z-order/delete when on a region.
+  private openContextMenu(e: MouseEvent): void {
+    const world = screenToWorld(this.view, { x: e.offsetX, y: e.offsetY })
+    const editor = useEditorStore.getState()
+    if (!editor.regionsVisible) {
+      this.onContextMenu({ x: e.offsetX, y: e.offsetY, regionId: null, vertexIndex: null })
+      return
+    }
+    const project = useProjectStore.getState().project
+    const hit = topRegionAt(project.regions, world)
+    if (hit && !editor.selectedRegionIds.includes(hit.id)) editor.select([hit.id])
+    const selected = useEditorStore.getState().selectedRegionIds
+    const regionId = hit?.id ?? (selected.length === 1 ? selected[0] : null)
+    this.onContextMenu({
+      x: e.offsetX,
+      y: e.offsetY,
+      regionId,
+      vertexIndex: this.vertexAt(world, regionId),
+    })
+  }
+
+  private vertexAt(world: XY, regionId: string | null): number | null {
+    if (!regionId) return null
+    const selected = useEditorStore.getState().selectedRegionIds
+    if (selected.length !== 1 || selected[0] !== regionId) return null
+    const region = useProjectStore.getState().project.regions.find((r) => r.id === regionId)
+    if (!region || region.geometry.kind !== 'polygon') return null
+    let best: number | null = null
+    let bestDist = VERTEX_HIT_PX / this.view.scale
+    for (const handle of handlesFor(region.geometry)) {
+      if (handle.kind !== 'vertex') continue
+      const d = Math.hypot(handle.at.x - world.x, handle.at.y - world.y)
+      if (d <= bestDist) {
+        bestDist = d
+        best = handle.index
+      }
+    }
+    return best
   }
 
   private renderVectors(): void {

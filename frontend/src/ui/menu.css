@@ -1,0 +1,37 @@
+/* Canvas right-click context menu. Floating surface per docs/design/. */
+
+.context-menu {
+  position: absolute;
+  z-index: 20;
+  min-width: 152px;
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-float);
+  box-shadow: var(--shadow-float);
+}
+
+.context-menu-item {
+  display: block;
+  width: 100%;
+  height: var(--row-height);
+  padding: 0 var(--space-3);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-align: left;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.context-menu-item:hover {
+  background: var(--surface-hover);
+}
+
+.context-menu-item.danger {
+  color: var(--accent-seal);
+}

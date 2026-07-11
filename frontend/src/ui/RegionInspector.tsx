@@ -107,8 +107,10 @@ function SingleRegion({
               value={String(region.z)}
               aria-label="Z-order value"
               onCommit={(text) => {
+                // Schema v1 requires integer z; round so a typed 1.5 can't
+                // serialise an invalid document.
                 const z = Number(text)
-                if (Number.isFinite(z)) patch({ z })
+                if (Number.isFinite(z)) patch({ z: Math.round(z) })
               }}
             />
             <button

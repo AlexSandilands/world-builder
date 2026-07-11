@@ -15,6 +15,12 @@ const STROKE = {
 
 const TOOL_ICONS: Record<ToolId, ReactNode> = {
   select: <path {...STROKE} d="M5 3l8 7-4.4.6L6 15z" />,
+  hand: (
+    <path
+      {...STROKE}
+      d="M6.4 9V5.4a0.8 0.8 0 0 1 1.6 0V8M8 8V4.4a0.8 0.8 0 0 1 1.6 0V8M9.6 8V5a0.8 0.8 0 0 1 1.6 0V10.5c0 2-1.5 3.7-3.7 3.7-1 0-1.9-.3-2.6-1L4 10.7a0.9 0.9 0 0 1 1.3-1.3L6.4 10.6"
+    />
+  ),
   lasso: <path {...STROKE} d="M9 3.5l5 2.5.5 5-4 4.5L5 14l-1-6z" />,
   rect: <rect {...STROKE} x="3.5" y="4.5" width="11" height="9" />,
   ellipse: <ellipse {...STROKE} cx="9" cy="9" rx="5.5" ry="4.5" />,
@@ -22,6 +28,7 @@ const TOOL_ICONS: Record<ToolId, ReactNode> = {
 
 const TOOLS: { id: ToolId; label: string; hotkey: string }[] = [
   { id: 'select', label: 'Select', hotkey: 'V' },
+  { id: 'hand', label: 'Hand (pan)', hotkey: 'H' },
   { id: 'lasso', label: 'Lasso polygon', hotkey: 'L' },
   { id: 'rect', label: 'Rectangle', hotkey: 'R' },
   { id: 'ellipse', label: 'Ellipse', hotkey: 'E' },

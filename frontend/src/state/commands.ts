@@ -96,7 +96,11 @@ export function replaceRegionCommand(
 ): RegionReplace | null {
   const before = project.regions.find((r) => r.id === id)
   if (!before) return null
-  return { kind: 'region/replace', changes: [{ id, before, after: { ...before, ...patch } }] }
+  // z is an integer in schema v1; enforce it here so no patch source can
+  // slip a fractional z into the document.
+  const after = { ...before, ...patch }
+  if (patch.z !== undefined) after.z = Math.round(patch.z)
+  return { kind: 'region/replace', changes: [{ id, before, after }] }
 }
 
 // Bottom-to-top stacking order: ascending z, array order breaking ties

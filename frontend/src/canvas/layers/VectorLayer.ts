@@ -141,7 +141,13 @@ export class VectorLayer extends Container {
     const y = Math.min(draft.a.y, draft.b.y)
     const w = Math.abs(draft.b.x - draft.a.x)
     const h = Math.abs(draft.b.y - draft.a.y)
-    if (draft.kind === 'rect') {
+    if (draft.kind === 'marquee') {
+      // Selection colour, not the draw colour: a marquee picks, not draws.
+      this.g
+        .rect(x, y, w, h)
+        .fill({ color: this.theme.selectionFill })
+        .stroke({ width: px(1), color: this.theme.selection })
+    } else if (draft.kind === 'rect') {
       this.g.rect(x, y, w, h).stroke(stroke)
     } else {
       this.g.ellipse(x + w / 2, y + h / 2, w / 2, h / 2).stroke(stroke)
