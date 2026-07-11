@@ -5,7 +5,7 @@ import { useViewportStore } from '../state/viewportStore'
 // tile count makes the deep-zoom invariant visible — it stays small (only the
 // viewport's worth of tiles) even though the artwork is 16k².
 export function Toolbar() {
-  const name = useProjectStore((s) => s.project.name)
+  const name = useProjectStore((s) => s.project.meta.name)
   const zoom = useViewportStore((s) => s.zoomPercent)
   const residentTiles = useViewportStore((s) => s.residentTiles)
   const requestFit = useViewportStore((s) => s.requestFit)

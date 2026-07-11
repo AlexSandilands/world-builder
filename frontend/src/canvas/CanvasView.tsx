@@ -1,39 +1,37 @@
-import { useEffect, useRef } from 'react'
-import { useProjectStore } from '../state/projectStore'
+import { useEffect, useRef, useState } from 'react'
 import { useViewportStore } from '../state/viewportStore'
+import { CanvasContextMenu } from '../ui/CanvasContextMenu'
+import type { ContextMenuRequest } from './CanvasController'
 import { CanvasController } from './CanvasController'
 
-// Thin React wrapper: mounts the imperative Pixi controller into a div and
-// bridges the zustand stores to it. All rendering happens in the controller.
+// Thin React wrapper: mounts the imperative Pixi controller into a div. The
+// controller subscribes to the project/editor stores itself, so document and
+// selection changes never remount it (a remount tears down the WebGL context
+// and resets the viewport).
 export function CanvasView() {
   const hostRef = useRef<HTMLDivElement>(null)
   const controllerRef = useRef<CanvasController | null>(null)
-  const layers = useProjectStore((s) => s.project.layers)
   const fitNonce = useViewportStore((s) => s.fitNonce)
+  const [menu, setMenu] = useState<ContextMenuRequest | null>(null)
 
-  // Mount exactly once: store mutations (layer toggles replace the project
-  // object identity) must flow through setLayers, never tear down the WebGL
-  // context or reset the viewport. Loading a different project will need an
-  // explicit remount path when that feature lands.
   useEffect(() => {
     const host = hostRef.current
     if (!host) return
     let cancelled = false
-    const controller = new CanvasController((zoom, tiles) =>
-      useViewportStore.getState().setReadout(zoom, tiles),
+    const controller = new CanvasController(
+      (zoom, tiles) => useViewportStore.getState().setReadout(zoom, tiles),
+      (request) => setMenu(request),
     )
     // WebGL is unavailable under jsdom; a failed init must not crash the app
     // shell (unit tests render this component headless).
     controller
-      .mount(host, useProjectStore.getState().project)
+      .mount(host)
       .then(() => {
         if (cancelled) {
           controller.destroy()
           return
         }
         controllerRef.current = controller
-        // Catch up on toggles that happened while init was in flight.
-        controller.setLayers(useProjectStore.getState().project.layers)
       })
       .catch(() => {})
 
@@ -45,12 +43,13 @@ export function CanvasView() {
   }, [])
 
   useEffect(() => {
-    controllerRef.current?.setLayers(layers)
-  }, [layers])
-
-  useEffect(() => {
     if (fitNonce > 0) controllerRef.current?.fit()
   }, [fitNonce])
 
-  return <div ref={hostRef} className="canvas-host" data-testid="canvas-host" />
+  return (
+    <>
+      <div ref={hostRef} className="canvas-host" data-testid="canvas-host" />
+      {menu && <CanvasContextMenu request={menu} onClose={() => setMenu(null)} />}
+    </>
+  )
 }

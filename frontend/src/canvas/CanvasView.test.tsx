@@ -1,11 +1,12 @@
 import { act, render, waitFor } from '@testing-library/react'
 import { beforeEach, expect, test, vi } from 'vitest'
 import { CanvasView } from './CanvasView'
-import { sampleProject, useProjectStore } from '../state/projectStore'
+import { createDefaultProject } from '../state/defaultProject'
+import { useHistoryStore } from '../state/historyStore'
+import { useProjectStore } from '../state/projectStore'
 
 type MockController = {
   mount: ReturnType<typeof vi.fn>
-  setLayers: ReturnType<typeof vi.fn>
   fit: ReturnType<typeof vi.fn>
   destroy: ReturnType<typeof vi.fn>
 }
@@ -15,7 +16,6 @@ const instances: MockController[] = []
 vi.mock('./CanvasController', () => ({
   CanvasController: class {
     mount = vi.fn().mockResolvedValue(undefined)
-    setLayers = vi.fn()
     fit = vi.fn()
     destroy = vi.fn()
     constructor() {
@@ -26,13 +26,15 @@ vi.mock('./CanvasController', () => ({
 
 beforeEach(() => {
   instances.length = 0
-  useProjectStore.setState({ project: sampleProject, selectedLayerId: null })
+  useProjectStore.setState({ project: createDefaultProject() })
+  useHistoryStore.getState().clear()
 })
 
-// Regression for PR #43 review: toggling a layer replaces the project object
-// identity; that must flow through setLayers, never remount the controller
-// (a remount tears down the WebGL context and resets the viewport to fit).
-test('layer toggle updates the live controller instead of remounting it', async () => {
+// Regression for PR #43 review: document mutations replace the project object
+// identity; that must reach the controller via its store subscription, never
+// by remounting it (a remount tears down the WebGL context and resets the
+// viewport to fit).
+test('project changes do not remount the controller', async () => {
   render(<CanvasView />)
   await waitFor(() => expect(instances.length).toBeGreaterThan(0))
   const controller = instances[instances.length - 1]
@@ -40,13 +42,18 @@ test('layer toggle updates the live controller instead of remounting it', async 
   const mountedControllers = instances.length
 
   act(() => {
-    useProjectStore.getState().toggleLayerVisibility('line-high-road')
+    useProjectStore.getState().dispatch({
+      kind: 'region/add',
+      region: {
+        id: 'r1',
+        type: 'water',
+        z: 0,
+        geometry: { kind: 'rect', x: 0, y: 0, width: 100, height: 100 },
+      },
+    })
   })
 
   expect(instances.length).toBe(mountedControllers)
   expect(controller.destroy).not.toHaveBeenCalled()
-  await waitFor(() => {
-    const lastCall = controller.setLayers.mock.calls.at(-1)?.[0]
-    expect(lastCall.find((l: { id: string }) => l.id === 'line-high-road')?.visible).toBe(false)
-  })
+  expect(useProjectStore.getState().project.regions).toHaveLength(1)
 })
