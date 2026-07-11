@@ -1,0 +1,25 @@
+{
+  "run_id": "flux_st080_s2002",
+  "model_family": "flux",
+  "seed": 2002,
+  "control_strength": 0.8,
+  "prompt_variant": "base",
+  "positive_prompt": "hand-drawn top-down fantasy city map, ink and watercolour",
+  "negative_prompt": null,
+  "control_variant": "dense",
+  "control_image": "lineart_dense.png",
+  "control_image_sha256": "94c51425e3b305d9dfbe203862caa3e0eed388753216e3072ae0b5fa9c6e0e85",
+  "model_file_sha256": {
+    "diffusion_models/flux1-dev-fp8.safetensors": "8e91b68084b53a7fc44ed2a3756d821e355ac1a7b6fe29be760c1db532f3d88a",
+    "controlnet/flux1-dev-controlnet-union-instantx.safetensors": "2cd23f9da9f2f24d75ded22c0c2596782312aa0b88e05076b4b8621a0b1fa9d1",
+    "text_encoders/clip_l.safetensors": "660c6f5b1abae9dc498ac2d21e1347d2abdb0cf6c0c0c8576cd796491d9a6cdd",
+    "text_encoders/t5xxl_fp8_e4m3fn_scaled.safetensors": "a498f0485dc9536735258018417c3fd7758dc3bccc0a645feaa472b34955557a",
+    "vae/flux_ae.safetensors": "afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38"
+  },
+  "output_sha256": "141995d5531f08323ac2c2843e5d8c5fa83ca80f272d58e0a394de571ee798ea",
+  "wall_clock_s": 93.0,
+  "resolution": [
+    2048,
+    2048
+  ]
+}

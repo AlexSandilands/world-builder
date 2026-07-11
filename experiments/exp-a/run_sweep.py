@@ -338,7 +338,11 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, required=True)
-    parser.add_argument("--phase", choices=["adherence", "scale", "all"], default="all")
+    parser.add_argument(
+        "--phase",
+        choices=["adherence", "scale", "followup", "all"],
+        default="all",
+    )
     args = parser.parse_args()
     base_url = f"http://{args.host}:{args.port}"
 

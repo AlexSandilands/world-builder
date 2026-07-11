@@ -1,0 +1,5 @@
+# Full-resolution outputs are large (~9 MB each, ~160 MB total) and regenerable
+# from the recorded workflow.json. The lightweight reproducibility record
+# (manifest.json + workflow.json) and preview.jpg are committed.
+runs/*/output.png
+__pycache__/
