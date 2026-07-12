@@ -1,0 +1,5734 @@
+{
+  "x0_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg1",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1001,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x0_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense fantasy forest canopy, top-down map illustration, dark green treetops",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.585
+      }
+    }
+  },
+  "x768_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 768,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg2",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1002,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x768_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense fantasy forest canopy, top-down map illustration, dark green treetops",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.857204
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cemetery district, headstones and mausoleums, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.932987
+      }
+    }
+  },
+  "x1536_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1536,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg2",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1003,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x1536_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cemetery district, headstones and mausoleums, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.895287
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, city gate plaza, fortified gatehouse approach, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.937894
+      }
+    }
+  },
+  "x2304_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2304,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_r0",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1004,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x2304_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x3072_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg1",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1005,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x3072_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense fantasy forest canopy, top-down map illustration, dark green treetops",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.7029
+      }
+    }
+  },
+  "x0_y768": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 768
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg2",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1006,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x0_y768",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense fantasy forest canopy, top-down map illustration, dark green treetops",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.863622
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, tannery and rendering yards, downwind industry, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.9327
+      }
+    }
+  },
+  "x768_y768": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 768,
+        "y": 768
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg6",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1007,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x768_y768",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, tannery and rendering yards, downwind industry, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.550956
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cemetery district, headstones and mausoleums, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.755646
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, stables and coach yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.823971
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, granary district, storehouses and threshing yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.908156
+      }
+    },
+    "pos_r5": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense fantasy forest canopy, top-down map illustration, dark green treetops",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg5": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg4",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r5",
+          0
+        ],
+        "conditioning_to_strength": 0.974629
+      }
+    },
+    "pos_r6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, guild hall district, workshops and counting houses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg6": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg5",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r6",
+          0
+        ],
+        "conditioning_to_strength": 0.977696
+      }
+    }
+  },
+  "x1536_y768": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1536,
+        "y": 768
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg6",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1008,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x1536_y768",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, stables and coach yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, artisan quarter, workshops and kilns, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.522336
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cemetery district, headstones and mausoleums, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.693133
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, city gate plaza, fortified gatehouse approach, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.766406
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.893826
+      }
+    },
+    "pos_r5": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, guild hall district, workshops and counting houses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg5": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg4",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r5",
+          0
+        ],
+        "conditioning_to_strength": 0.915491
+      }
+    },
+    "pos_r6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, walled noble quarter, manicured gardens and townhouses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg6": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg5",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r6",
+          0
+        ],
+        "conditioning_to_strength": 0.941285
+      }
+    }
+  },
+  "x2304_y768": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2304,
+        "y": 768
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg4",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1009,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x2304_y768",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense residential district, narrow lanes and tight housing, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.640129
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, city gate plaza, fortified gatehouse approach, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.828757
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, artisan quarter, workshops and kilns, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.875947
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, modest residential district, terraced houses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.908355
+      }
+    }
+  },
+  "x3072_y768": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 768
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg2",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1010,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x3072_y768",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense fantasy forest canopy, top-down map illustration, dark green treetops",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.834263
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense residential district, narrow lanes and tight housing, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.914191
+      }
+    }
+  },
+  "x0_y1536": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 1536
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg3",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1011,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x0_y1536",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, city gate plaza, fortified gatehouse approach, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.935068
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, river cutting through the city to a harbour, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.946139
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, tannery and rendering yards, downwind industry, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.950695
+      }
+    }
+  },
+  "x768_y1536": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 768,
+        "y": 1536
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg7",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1012,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x768_y1536",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, granary district, storehouses and threshing yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, city gate plaza, fortified gatehouse approach, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.523843
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, military barracks, drill yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.751197
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.806839
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, tannery and rendering yards, downwind industry, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.864227
+      }
+    },
+    "pos_r5": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, guild hall district, workshops and counting houses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg5": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg4",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r5",
+          0
+        ],
+        "conditioning_to_strength": 0.915751
+      }
+    },
+    "pos_r6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, bustling market square, stalls and awnings, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg6": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg5",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r6",
+          0
+        ],
+        "conditioning_to_strength": 0.931933
+      }
+    },
+    "pos_r7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, stables and coach yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg7": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg6",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r7",
+          0
+        ],
+        "conditioning_to_strength": 0.96203
+      }
+    }
+  },
+  "x1536_y1536": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1536,
+        "y": 1536
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg9",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1013,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x1536_y1536",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, guild hall district, workshops and counting houses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, bustling market square, stalls and awnings, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.509125
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, walled noble quarter, manicured gardens and townhouses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.678915
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, temple district, plazas and shrine courtyards, pale stone, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.761262
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, royal keep and citadel, fortified tower, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.838424
+      }
+    },
+    "pos_r5": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, university district, lecture halls and cloisters, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg5": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg4",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r5",
+          0
+        ],
+        "conditioning_to_strength": 0.919048
+      }
+    },
+    "pos_r6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, artisan quarter, workshops and kilns, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg6": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg5",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r6",
+          0
+        ],
+        "conditioning_to_strength": 0.934317
+      }
+    },
+    "pos_r7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, military barracks, drill yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg7": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg6",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r7",
+          0
+        ],
+        "conditioning_to_strength": 0.940639
+      }
+    },
+    "pos_r8": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, stables and coach yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg8": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg7",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r8",
+          0
+        ],
+        "conditioning_to_strength": 0.959831
+      }
+    },
+    "pos_r9": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, granary district, storehouses and threshing yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg9": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg8",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r9",
+          0
+        ],
+        "conditioning_to_strength": 0.972451
+      }
+    }
+  },
+  "x2304_y1536": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2304,
+        "y": 1536
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg8",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1014,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x2304_y1536",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, modest residential district, terraced houses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, slum district, crowded shanty housing, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.580404
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, university district, lecture halls and cloisters, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.744886
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense residential district, narrow lanes and tight housing, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.837009
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, walled noble quarter, manicured gardens and townhouses, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.907407
+      }
+    },
+    "pos_r5": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, temple district, plazas and shrine courtyards, pale stone, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg5": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg4",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r5",
+          0
+        ],
+        "conditioning_to_strength": 0.926745
+      }
+    },
+    "pos_r6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, artisan quarter, workshops and kilns, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg6": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg5",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r6",
+          0
+        ],
+        "conditioning_to_strength": 0.949164
+      }
+    },
+    "pos_r7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, collapsed building under repair, scaffolding and rubble, small construction patch, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg7": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg6",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r7",
+          0
+        ],
+        "conditioning_to_strength": 0.954304
+      }
+    },
+    "pos_r8": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg8": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg7",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r8",
+          0
+        ],
+        "conditioning_to_strength": 0.967791
+      }
+    }
+  },
+  "x3072_y1536": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 1536
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg3",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1015,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x3072_y1536",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, slum district, crowded shanty housing, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.851768
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense residential district, narrow lanes and tight housing, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.917012
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, collapsed building under repair, scaffolding and rubble, small construction patch, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.965393
+      }
+    }
+  },
+  "x0_y2304": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 2304
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg2",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1016,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x0_y2304",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cultivated farmland in patchwork strips, hedgerows, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.620794
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, river cutting through the city to a harbour, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.933252
+      }
+    }
+  },
+  "x768_y2304": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 768,
+        "y": 2304
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg8",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1017,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x768_y2304",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cultivated farmland in patchwork strips, hedgerows, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, warehouse district, loading yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.530236
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, military barracks, drill yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.735215
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, river cutting through the city to a harbour, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.906706
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, city gate plaza, fortified gatehouse approach, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.917029
+      }
+    },
+    "pos_r5": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg5": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg4",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r5",
+          0
+        ],
+        "conditioning_to_strength": 0.933808
+      }
+    },
+    "pos_r6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, harbour docks, piers and warehouses on the waterfront, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg6": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg5",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r6",
+          0
+        ],
+        "conditioning_to_strength": 0.958005
+      }
+    },
+    "pos_r7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, public park, winding paths and gardens, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg7": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg6",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r7",
+          0
+        ],
+        "conditioning_to_strength": 0.973528
+      }
+    },
+    "pos_r8": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, bustling market square, stalls and awnings, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg8": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg7",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r8",
+          0
+        ],
+        "conditioning_to_strength": 0.978498
+      }
+    }
+  },
+  "x1536_y2304": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1536,
+        "y": 2304
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg9",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1018,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x1536_y2304",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, public park, winding paths and gardens, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, harbour docks, piers and warehouses on the waterfront, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.537802
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, university district, lecture halls and cloisters, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.815572
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, military barracks, drill yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.851434
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, bustling market square, stalls and awnings, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.8881
+      }
+    },
+    "pos_r5": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, river cutting through the city to a harbour, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg5": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg4",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r5",
+          0
+        ],
+        "conditioning_to_strength": 0.913425
+      }
+    },
+    "pos_r6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, temple district, plazas and shrine courtyards, pale stone, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg6": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg5",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r6",
+          0
+        ],
+        "conditioning_to_strength": 0.929019
+      }
+    },
+    "pos_r7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, city gate plaza, fortified gatehouse approach, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg7": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg6",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r7",
+          0
+        ],
+        "conditioning_to_strength": 0.944556
+      }
+    },
+    "pos_r8": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg8": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg7",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r8",
+          0
+        ],
+        "conditioning_to_strength": 0.951997
+      }
+    },
+    "pos_r9": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, warehouse district, loading yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg9": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg8",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r9",
+          0
+        ],
+        "conditioning_to_strength": 0.957981
+      }
+    }
+  },
+  "x2304_y2304": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2304,
+        "y": 2304
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg5",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1019,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x2304_y2304",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, city gate plaza, fortified gatehouse approach, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.656532
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, university district, lecture halls and cloisters, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.78113
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, slum district, crowded shanty housing, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.899227
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, river cutting through the city to a harbour, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.940302
+      }
+    },
+    "pos_r5": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, harbour docks, piers and warehouses on the waterfront, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg5": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg4",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r5",
+          0
+        ],
+        "conditioning_to_strength": 0.971016
+      }
+    }
+  },
+  "x3072_y2304": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 2304
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg2",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1020,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x3072_y2304",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, still lake water, top-down fantasy map illustration, deep blue",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.921019
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, slum district, crowded shanty housing, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.969672
+      }
+    }
+  },
+  "x0_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_r0",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1021,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x0_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cultivated farmland in patchwork strips, hedgerows, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x768_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 768,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg2",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1022,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x768_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cultivated farmland in patchwork strips, hedgerows, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, warehouse district, loading yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.937979
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, harbour docks, piers and warehouses on the waterfront, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.965897
+      }
+    }
+  },
+  "x1536_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1536,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg4",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1023,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x1536_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, cultivated farmland in patchwork strips, hedgerows, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.552641
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, harbour docks, piers and warehouses on the waterfront, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.866517
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, river cutting through the city to a harbour, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.9639
+      }
+    },
+    "pos_r4": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, warehouse district, loading yards, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg4": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg3",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r4",
+          0
+        ],
+        "conditioning_to_strength": 0.97945
+      }
+    }
+  },
+  "x2304_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2304,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg2",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1024,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x2304_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, still lake water, top-down fantasy map illustration, deep blue",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.930746
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, river cutting through the city to a harbour, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.940972
+      }
+    }
+  },
+  "x3072_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos_avg3",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1025,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov256_area_x3072_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos_r0": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, still lake water, top-down fantasy map illustration, deep blue",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_r1": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, empty scrubland and rough grass, untouched wilderness, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg1": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_r0",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r1",
+          0
+        ],
+        "conditioning_to_strength": 0.553061
+      }
+    },
+    "pos_r2": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, dense fantasy forest canopy, top-down map illustration, dark green treetops",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg2": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg1",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r2",
+          0
+        ],
+        "conditioning_to_strength": 0.948478
+      }
+    },
+    "pos_r3": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour, river cutting through the city to a harbour, top-down fantasy map illustration",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "pos_avg3": {
+      "class_type": "ConditioningAverage",
+      "inputs": {
+        "conditioning_to": [
+          "pos_avg2",
+          0
+        ],
+        "conditioning_from": [
+          "pos_r3",
+          0
+        ],
+        "conditioning_to_strength": 0.9627
+      }
+    }
+  }
+}

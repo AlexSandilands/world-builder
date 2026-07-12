@@ -1,0 +1,7 @@
+# Full-resolution stitches are large (4096²–8192²) and exactly regenerable
+# from the committed workflows.json; work/ holds per-tile checkpoints and
+# upload staging. Manifests, workflow JSONs, previews, sheets and crops are
+# committed.
+runs/*/stitched.png
+work/
+__pycache__/

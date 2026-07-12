@@ -1,0 +1,5042 @@
+{
+  "x0_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1001,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x0_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x640_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 640,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1002,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x640_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1280_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1280,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1003,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1280_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1920_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1920,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1004,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1920_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x2560_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2560,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1005,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x2560_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x3072_y0": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 0
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1006,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x3072_y0",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x0_y640": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 640
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1007,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x0_y640",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x640_y640": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 640,
+        "y": 640
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1008,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x640_y640",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1280_y640": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1280,
+        "y": 640
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1009,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1280_y640",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1920_y640": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1920,
+        "y": 640
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1010,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1920_y640",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x2560_y640": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2560,
+        "y": 640
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1011,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x2560_y640",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x3072_y640": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 640
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1012,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x3072_y640",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x0_y1280": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 1280
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1013,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x0_y1280",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x640_y1280": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 640,
+        "y": 1280
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1014,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x640_y1280",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1280_y1280": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1280,
+        "y": 1280
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1015,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1280_y1280",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1920_y1280": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1920,
+        "y": 1280
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1016,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1920_y1280",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x2560_y1280": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2560,
+        "y": 1280
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1017,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x2560_y1280",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x3072_y1280": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 1280
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1018,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x3072_y1280",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x0_y1920": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 1920
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1019,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x0_y1920",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x640_y1920": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 640,
+        "y": 1920
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1020,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x640_y1920",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1280_y1920": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1280,
+        "y": 1920
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1021,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1280_y1920",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1920_y1920": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1920,
+        "y": 1920
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1022,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1920_y1920",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x2560_y1920": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2560,
+        "y": 1920
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1023,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x2560_y1920",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x3072_y1920": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 1920
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1024,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x3072_y1920",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x0_y2560": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 2560
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1025,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x0_y2560",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x640_y2560": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 640,
+        "y": 2560
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1026,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x640_y2560",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1280_y2560": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1280,
+        "y": 2560
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1027,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1280_y2560",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1920_y2560": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1920,
+        "y": 2560
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1028,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1920_y2560",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x2560_y2560": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2560,
+        "y": 2560
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1029,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x2560_y2560",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x3072_y2560": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 2560
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1030,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x3072_y2560",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x0_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 0,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1031,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x0_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x640_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 640,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1032,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x640_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1280_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1280,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1033,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1280_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x1920_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 1920,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1034,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x1920_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x2560_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 2560,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1035,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x2560_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  },
+  "x3072_y3072": {
+    "ckpt": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "sd_xl_base_1.0.safetensors"
+      }
+    },
+    "neg": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    },
+    "base_img": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "expC_sdxl_st080_end050_s1001_4096.png"
+      }
+    },
+    "crop": {
+      "class_type": "ImageCrop",
+      "inputs": {
+        "image": [
+          "base_img",
+          0
+        ],
+        "width": 1024,
+        "height": 1024,
+        "x": 3072,
+        "y": 3072
+      }
+    },
+    "encode": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "crop",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "cn": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "xinsir_controlnet-tile-sdxl-1.0.safetensors"
+      }
+    },
+    "cn_apply": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "pos",
+          0
+        ],
+        "negative": [
+          "neg",
+          0
+        ],
+        "control_net": [
+          "cn",
+          0
+        ],
+        "image": [
+          "crop",
+          0
+        ],
+        "strength": 0.6,
+        "start_percent": 0.0,
+        "end_percent": 1.0
+      }
+    },
+    "sampler": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 1036,
+        "steps": 30,
+        "cfg": 7.0,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.5,
+        "model": [
+          "ckpt",
+          0
+        ],
+        "positive": [
+          "cn_apply",
+          0
+        ],
+        "negative": [
+          "cn_apply",
+          1
+        ],
+        "latent_image": [
+          "encode",
+          0
+        ]
+      }
+    },
+    "decode": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "sampler",
+          0
+        ],
+        "vae": [
+          "ckpt",
+          2
+        ]
+      }
+    },
+    "save": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "dn050_ov384_global_x3072_y3072",
+        "images": [
+          "decode",
+          0
+        ]
+      }
+    },
+    "pos": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "hand-drawn top-down fantasy city map, ink and watercolour",
+        "clip": [
+          "ckpt",
+          1
+        ]
+      }
+    }
+  }
+}
