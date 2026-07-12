@@ -2,6 +2,8 @@ import { Application, Container } from 'pixi.js'
 import type { XY } from '../features/regions/geometry'
 import { handlesFor } from '../features/regions/handles'
 import { topRegionAt } from '../features/regions/hitTest'
+import { LineInteraction } from '../features/lines/interaction'
+import { PointInteraction } from '../features/points/interaction'
 import { UnderlayInteraction } from '../features/underlay/interaction'
 import type { ToolId } from '../state/editorStore'
 import { useEditorStore } from '../state/editorStore'
@@ -13,7 +15,7 @@ import { VectorLayer } from './layers/VectorLayer'
 import { SyntheticTileSource } from './tiles/TileSource'
 import { TileLayer } from './tiles/TileLayer'
 import { readOverlayTheme } from './overlayTheme'
-import { BoxTool, LassoTool } from './tools/drawTools'
+import { BoxTool, LassoTool, LineTool, PointTool } from './tools/drawTools'
 import { SelectTool } from './tools/selectTool'
 import type { Draft, PointerInfo, Tool, ToolContext } from './tools/toolTypes'
 
@@ -75,12 +77,16 @@ export class CanvasController {
   private readonly onReadout: Readout
   private readonly onContextMenu: ContextMenuHandler
   private readonly underlayInteraction = new UnderlayInteraction()
+  private readonly lineInteraction = new LineInteraction()
+  private readonly pointInteraction = new PointInteraction()
   private readonly tools: Record<ToolId, Tool> = {
     select: new SelectTool(),
     hand: HAND_TOOL,
     lasso: new LassoTool(),
     rect: new BoxTool('rect'),
     ellipse: new BoxTool('ellipse'),
+    line: new LineTool(),
+    point: new PointTool(),
   }
   private readonly toolContext: ToolContext = {
     scale: () => this.view.scale,
@@ -132,6 +138,10 @@ export class CanvasController {
       useEditorStore.subscribe((state, prev) => {
         if (state.tool !== prev.tool) {
           this.cancelActive()
+          // A multi-click draw tool (line) can be mid-gesture between
+          // pointer-up events, when it is not `activeDrag` — cancel the tool
+          // being left explicitly so switching away mid-draw discards it.
+          this.tools[prev.tool].cancel(this.toolContext)
           this.updateCursor()
         }
         this.renderVectors()
@@ -155,13 +165,19 @@ export class CanvasController {
     drag?.cancel(this.toolContext)
   }
 
-  // The select tool also owns the underlay: try it first (it declines fast —
-  // hidden/locked/absent/miss — when it's not the pointer's target) so a
-  // click on the underlay moves it instead of falling through to a region
-  // marquee. Other tools (draw, hand) never touch the underlay.
+  // The select tool also owns points, lines and the underlay: try them first
+  // in visual top-to-bottom order (each declines fast — hidden/locked/miss —
+  // when it's not the pointer's target) so a click on the topmost thing under
+  // the cursor wins over broader hit-tests beneath it (a region marquee,
+  // ultimately). Other tools (draw, hand) never touch them.
   private pointerDownCandidates(): Tool[] {
     if (useEditorStore.getState().tool !== 'select') return [this.activeTool()]
-    return [this.underlayInteraction, this.activeTool()]
+    return [
+      this.pointInteraction,
+      this.lineInteraction,
+      this.underlayInteraction,
+      this.activeTool(),
+    ]
   }
 
   private pointerInfo(e: PointerEvent | MouseEvent): PointerInfo {
@@ -237,7 +253,14 @@ export class CanvasController {
       this.updateCursor()
     }
     const onDoubleClick = (e: MouseEvent) => {
-      this.activeTool().onDoubleClick?.(this.pointerInfo(e), this.toolContext)
+      const info = this.pointerInfo(e)
+      // Try every select-tool candidate, not just activeTool(): line-vertex
+      // insertion lives on lineInteraction, a separate instance from the
+      // region SelectTool. Each candidate no-ops unless its own selection
+      // guard matches, so trying all of them is safe.
+      for (const candidate of this.pointerDownCandidates()) {
+        candidate.onDoubleClick?.(info, this.toolContext)
+      }
     }
     const onContextMenu = (e: MouseEvent) => {
       e.preventDefault()
@@ -246,6 +269,10 @@ export class CanvasController {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         this.cancelActive()
+        // Also cancel the active tool itself: a multi-click draw tool (line)
+        // sits mid-gesture between pointer-up events, when it is not the
+        // `activeDrag` cancelActive() reaches.
+        this.activeTool().cancel(this.toolContext)
         this.renderVectors()
         return
       }
@@ -346,7 +373,11 @@ export class CanvasController {
       {
         project: useProjectStore.getState().project,
         selectedRegionIds: editor.selectedRegionIds,
+        selectedLineIds: editor.selectedLineIds,
+        selectedPointIds: editor.selectedPointIds,
         regionsVisible: editor.regionsVisible,
+        linesVisible: editor.linesVisible,
+        pointsVisible: editor.pointsVisible,
         draft: this.draft,
       },
       this.view.scale,

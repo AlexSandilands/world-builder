@@ -8,6 +8,10 @@ export type OverlayTheme = {
   warningFill: string
   handle: string
   draft: string
+  // Point/landmark marker fill. Not one of the design doc's fixed accent
+  // roles (brass/ink/verdigris/seal/amber) — points have no vocabulary
+  // colour like region maskColor, so this reuses the warm "brand" text tone.
+  marker: string
 }
 
 const FALLBACK: OverlayTheme = {
@@ -17,6 +21,7 @@ const FALLBACK: OverlayTheme = {
   warningFill: 'rgba(217, 138, 63, 0.2)',
   handle: '#f2ede2',
   draft: '#c9a45c',
+  marker: '#d6b877',
 }
 
 export function readOverlayTheme(): OverlayTheme {
@@ -29,5 +34,6 @@ export function readOverlayTheme(): OverlayTheme {
     warningFill: token('--overlay-warning-fill', FALLBACK.warningFill),
     handle: token('--overlay-handle', FALLBACK.handle),
     draft: token('--accent-brass', FALLBACK.draft),
+    marker: token('--text-brand', FALLBACK.marker),
   }
 }

@@ -1,4 +1,6 @@
 import { useEffect } from 'react'
+import { deleteSelectedLines } from '../features/lines/actions'
+import { deleteSelectedPoints } from '../features/points/actions'
 import { deleteSelectedRegions, reorderSelectedRegions } from '../features/regions/actions'
 import { saveProject } from '../features/project/persistence'
 import type { ToolId } from '../state/editorStore'
@@ -11,6 +13,17 @@ const TOOL_KEYS: Record<string, ToolId> = {
   l: 'lasso',
   r: 'rect',
   e: 'ellipse',
+  w: 'line',
+  p: 'point',
+}
+
+// Selection is mutually exclusive across kinds (state/editorStore.ts), so at
+// most one of these ever has anything to delete.
+function deleteSelected(): void {
+  const editor = useEditorStore.getState()
+  if (editor.selectedLineIds.length > 0) deleteSelectedLines()
+  else if (editor.selectedPointIds.length > 0) deleteSelectedPoints()
+  else deleteSelectedRegions()
 }
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -49,7 +62,7 @@ export function useEditorHotkeys(): void {
 
       if (key === 'delete' || key === 'backspace') {
         e.preventDefault()
-        deleteSelectedRegions()
+        deleteSelected()
         return
       }
       if (key === 'escape') {

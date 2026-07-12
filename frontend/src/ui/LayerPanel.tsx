@@ -2,6 +2,8 @@ import { isBelowMinSize } from '../features/regions/minSize'
 import { stackingOrder } from '../state/commands'
 import { useEditorStore } from '../state/editorStore'
 import { useProjectStore } from '../state/projectStore'
+import { LinesSection } from './LinesSection'
+import { PointsSection } from './PointsSection'
 import { UnderlaySection } from './UnderlaySection'
 
 // Layers panel: the regions layer (show/hide/lock) with its regions listed
@@ -28,6 +30,9 @@ export function LayerPanel() {
       <div className="panel-section-header">
         <h2>Layers</h2>
       </div>
+
+      <PointsSection />
+      <LinesSection />
 
       <div className="layer-group">
         <div className="layer-group-header">

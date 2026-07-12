@@ -6,6 +6,7 @@ import { MIN_REGION_SIDE_OUTPUT_PX } from '../features/regions/minSize'
 import { replaceRegionCommand } from '../state/commands'
 import { useEditorStore } from '../state/editorStore'
 import { useProjectStore } from '../state/projectStore'
+import { CommitInput } from './CommitInput'
 import { TypePicker } from './TypePicker'
 
 // Right-hand tagging panel for the selected region(s): display label, type
@@ -27,7 +28,8 @@ export function RegionInspector() {
       </div>
       {selected.length === 0 && (
         <p className="inspector-hint">
-          Select a region, or draw one with the lasso, rectangle or ellipse tool.
+          Select a region, line or point, or draw one with the tool rail (lasso, rectangle, ellipse,
+          line, point).
         </p>
       )}
       {selected.length === 1 && (
@@ -93,6 +95,7 @@ function SingleRegion({
           <TypePicker
             types={regionTypes}
             value={region.type}
+            label="Region type"
             onChange={(typeId) => {
               patch({ type: typeId })
               // Remember the pick: newly drawn regions default to it.
@@ -201,55 +204,5 @@ function MultiRegion({ count, locked }: { count: number; locked: boolean }) {
         Delete {count} regions
       </button>
     </fieldset>
-  )
-}
-
-// Text input that keeps local state while typing and commits one undoable
-// command on blur/Enter — keystrokes must not each become an undo step.
-function CommitInput({
-  value,
-  placeholder,
-  multiline = false,
-  onCommit,
-  'aria-label': ariaLabel,
-}: {
-  value: string
-  placeholder?: string
-  multiline?: boolean
-  onCommit: (text: string) => void
-  'aria-label'?: string
-}) {
-  const [text, setText] = useState(value)
-  const [lastValue, setLastValue] = useState(value)
-  if (value !== lastValue) {
-    setLastValue(value)
-    setText(value)
-  }
-  const commit = () => {
-    if (text !== value) onCommit(text)
-  }
-  if (multiline) {
-    return (
-      <textarea
-        value={text}
-        rows={3}
-        placeholder={placeholder}
-        onChange={(e) => setText(e.target.value)}
-        onBlur={commit}
-      />
-    )
-  }
-  return (
-    <input
-      type="text"
-      value={text}
-      aria-label={ariaLabel}
-      placeholder={placeholder}
-      onChange={(e) => setText(e.target.value)}
-      onBlur={commit}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') e.currentTarget.blur()
-      }}
-    />
   )
 }

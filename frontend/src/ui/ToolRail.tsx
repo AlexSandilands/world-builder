@@ -24,6 +24,22 @@ const TOOL_ICONS: Record<ToolId, ReactNode> = {
   lasso: <path {...STROKE} d="M9 3.5l5 2.5.5 5-4 4.5L5 14l-1-6z" />,
   rect: <rect {...STROKE} x="3.5" y="4.5" width="11" height="9" />,
   ellipse: <ellipse {...STROKE} cx="9" cy="9" rx="5.5" ry="4.5" />,
+  line: (
+    <>
+      <circle cx="3.5" cy="13.5" r="1.4" fill="currentColor" stroke="none" />
+      <circle cx="14.5" cy="4.5" r="1.4" fill="currentColor" stroke="none" />
+      <path {...STROKE} d="M4.5 12.5l4-5 1.5 2 4-5.5" />
+    </>
+  ),
+  point: (
+    <>
+      <path
+        {...STROKE}
+        d="M9 2.5a4.5 4.5 0 0 1 4.5 4.5c0 3.2-4.5 8-4.5 8s-4.5-4.8-4.5-8A4.5 4.5 0 0 1 9 2.5z"
+      />
+      <circle {...STROKE} cx="9" cy="7" r="1.6" />
+    </>
+  ),
 }
 
 const TOOLS: { id: ToolId; label: string; hotkey: string }[] = [
@@ -32,6 +48,8 @@ const TOOLS: { id: ToolId; label: string; hotkey: string }[] = [
   { id: 'lasso', label: 'Lasso polygon', hotkey: 'L' },
   { id: 'rect', label: 'Rectangle', hotkey: 'R' },
   { id: 'ellipse', label: 'Ellipse', hotkey: 'E' },
+  { id: 'line', label: 'Line (wall/road/river…)', hotkey: 'W' },
+  { id: 'point', label: 'Point (landmark/gate)', hotkey: 'P' },
 ]
 
 export function ToolRail() {

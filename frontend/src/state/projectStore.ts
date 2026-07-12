@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Geometry, Underlay, WorldBuilderProject } from '../generated/project'
+import type { Geometry, Line, Point, Underlay, WorldBuilderProject } from '../generated/project'
 import type { Command } from './commands'
 import { applyCommand, undoCommand } from './commands'
 import { createDefaultProject } from './defaultProject'
@@ -18,6 +18,9 @@ type ProjectState = {
   // Transient, non-undoable geometry update for live drag feedback; the drag
   // commits a single region/replace command when it ends.
   previewGeometry: (id: string, geometry: Geometry) => void
+  // Same, for lines (vertex drag / translate) and points (translate).
+  previewLine: (id: string, points: Line['points']) => void
+  previewPoint: (id: string, position: Point['position']) => void
   // Same, for the underlay transform (move/resize drag); commits a single
   // underlay/set command on release.
   previewUnderlay: (underlay: Underlay) => void
@@ -40,6 +43,20 @@ export const useProjectStore = create<ProjectState>((set) => ({
       project: {
         ...s.project,
         regions: s.project.regions.map((r) => (r.id === id ? { ...r, geometry } : r)),
+      },
+    })),
+  previewLine: (id, points) =>
+    set((s) => ({
+      project: {
+        ...s.project,
+        lines: s.project.lines.map((l) => (l.id === id ? { ...l, points } : l)),
+      },
+    })),
+  previewPoint: (id, position) =>
+    set((s) => ({
+      project: {
+        ...s.project,
+        points: s.project.points.map((p) => (p.id === id ? { ...p, position } : p)),
       },
     })),
   previewUnderlay: (underlay) => set((s) => ({ project: { ...s.project, underlay } })),

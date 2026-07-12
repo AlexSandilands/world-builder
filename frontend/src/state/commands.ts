@@ -1,4 +1,4 @@
-import type { Region, Underlay, WorldBuilderProject } from '../generated/project'
+import type { Line, Point, Region, Underlay, WorldBuilderProject } from '../generated/project'
 
 // Every mutation of the project document is expressed as one of these
 // commands: plain data with a pure apply and a pure undo, so the full undo
@@ -21,6 +21,23 @@ export type RegionSetZ = {
   changes: { id: string; before: number; after: number }[]
 }
 
+// Lines and points carry no z — the compiler handles each line type
+// structurally rather than by stacking order (docs/schema/project-v1.md), so
+// unlike regions there is no reorder command.
+export type LineAdd = { kind: 'line/add'; line: Line }
+export type LineRemove = { kind: 'line/remove'; removed: { index: number; line: Line }[] }
+export type LineReplace = {
+  kind: 'line/replace'
+  changes: { id: string; before: Line; after: Line }[]
+}
+
+export type PointAdd = { kind: 'point/add'; point: Point }
+export type PointRemove = { kind: 'point/remove'; removed: { index: number; point: Point }[] }
+export type PointReplace = {
+  kind: 'point/replace'
+  changes: { id: string; before: Point; after: Point }[]
+}
+
 // One command covers import (before undefined), transform edit (both
 // defined) and removal (after undefined) — a single underlay, no id needed.
 export type UnderlaySet = {
@@ -29,7 +46,18 @@ export type UnderlaySet = {
   after: Underlay | undefined
 }
 
-export type Command = RegionAdd | RegionRemove | RegionReplace | RegionSetZ | UnderlaySet
+export type Command =
+  | RegionAdd
+  | RegionRemove
+  | RegionReplace
+  | RegionSetZ
+  | LineAdd
+  | LineRemove
+  | LineReplace
+  | PointAdd
+  | PointRemove
+  | PointReplace
+  | UnderlaySet
 
 export function applyCommand(project: WorldBuilderProject, cmd: Command): WorldBuilderProject {
   switch (cmd.kind) {
@@ -52,6 +80,26 @@ export function applyCommand(project: WorldBuilderProject, cmd: Command): WorldB
         ...project,
         regions: project.regions.map((r) => (zById.has(r.id) ? { ...r, z: zById.get(r.id)! } : r)),
       }
+    }
+    case 'line/add':
+      return { ...project, lines: [...project.lines, cmd.line] }
+    case 'line/remove': {
+      const gone = new Set(cmd.removed.map((r) => r.line.id))
+      return { ...project, lines: project.lines.filter((l) => !gone.has(l.id)) }
+    }
+    case 'line/replace': {
+      const byId = new Map(cmd.changes.map((c) => [c.id, c.after]))
+      return { ...project, lines: project.lines.map((l) => byId.get(l.id) ?? l) }
+    }
+    case 'point/add':
+      return { ...project, points: [...project.points, cmd.point] }
+    case 'point/remove': {
+      const gone = new Set(cmd.removed.map((r) => r.point.id))
+      return { ...project, points: project.points.filter((p) => !gone.has(p.id)) }
+    }
+    case 'point/replace': {
+      const byId = new Map(cmd.changes.map((c) => [c.id, c.after]))
+      return { ...project, points: project.points.map((p) => byId.get(p.id) ?? p) }
     }
     case 'underlay/set':
       return { ...project, underlay: cmd.after }
@@ -82,6 +130,32 @@ export function undoCommand(project: WorldBuilderProject, cmd: Command): WorldBu
         ...project,
         regions: project.regions.map((r) => (zById.has(r.id) ? { ...r, z: zById.get(r.id)! } : r)),
       }
+    }
+    case 'line/add':
+      return { ...project, lines: project.lines.filter((l) => l.id !== cmd.line.id) }
+    case 'line/remove': {
+      const lines = [...project.lines]
+      for (const { index, line } of [...cmd.removed].sort((a, b) => a.index - b.index)) {
+        lines.splice(Math.min(index, lines.length), 0, line)
+      }
+      return { ...project, lines }
+    }
+    case 'line/replace': {
+      const byId = new Map(cmd.changes.map((c) => [c.id, c.before]))
+      return { ...project, lines: project.lines.map((l) => byId.get(l.id) ?? l) }
+    }
+    case 'point/add':
+      return { ...project, points: project.points.filter((p) => p.id !== cmd.point.id) }
+    case 'point/remove': {
+      const points = [...project.points]
+      for (const { index, point } of [...cmd.removed].sort((a, b) => a.index - b.index)) {
+        points.splice(Math.min(index, points.length), 0, point)
+      }
+      return { ...project, points }
+    }
+    case 'point/replace': {
+      const byId = new Map(cmd.changes.map((c) => [c.id, c.before]))
+      return { ...project, points: project.points.map((p) => byId.get(p.id) ?? p) }
     }
     case 'underlay/set':
       return { ...project, underlay: cmd.before }
@@ -176,4 +250,66 @@ export function nextRegionId(project: WorldBuilderProject): string {
 
 export function nextZ(project: WorldBuilderProject): number {
   return project.regions.reduce((max, r) => Math.max(max, r.z + 1), 0)
+}
+
+export function removeLinesCommand(
+  project: WorldBuilderProject,
+  ids: readonly string[],
+): LineRemove {
+  const wanted = new Set(ids)
+  return {
+    kind: 'line/remove',
+    removed: project.lines
+      .map((line, index) => ({ index, line }))
+      .filter((e) => wanted.has(e.line.id)),
+  }
+}
+
+export function replaceLineCommand(
+  project: WorldBuilderProject,
+  id: string,
+  patch: Partial<Line>,
+): LineReplace | null {
+  const before = project.lines.find((l) => l.id === id)
+  if (!before) return null
+  return { kind: 'line/replace', changes: [{ id, before, after: { ...before, ...patch } }] }
+}
+
+export function nextLineId(project: WorldBuilderProject): string {
+  const taken = new Set(project.lines.map((l) => l.id))
+  for (let n = project.lines.length + 1; ; n++) {
+    const id = `line-${n}`
+    if (!taken.has(id)) return id
+  }
+}
+
+export function removePointsCommand(
+  project: WorldBuilderProject,
+  ids: readonly string[],
+): PointRemove {
+  const wanted = new Set(ids)
+  return {
+    kind: 'point/remove',
+    removed: project.points
+      .map((point, index) => ({ index, point }))
+      .filter((e) => wanted.has(e.point.id)),
+  }
+}
+
+export function replacePointCommand(
+  project: WorldBuilderProject,
+  id: string,
+  patch: Partial<Point>,
+): PointReplace | null {
+  const before = project.points.find((p) => p.id === id)
+  if (!before) return null
+  return { kind: 'point/replace', changes: [{ id, before, after: { ...before, ...patch } }] }
+}
+
+export function nextPointId(project: WorldBuilderProject): string {
+  const taken = new Set(project.points.map((p) => p.id))
+  for (let n = project.points.length + 1; ; n++) {
+    const id = `point-${n}`
+    if (!taken.has(id)) return id
+  }
 }

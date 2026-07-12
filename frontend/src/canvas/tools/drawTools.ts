@@ -1,7 +1,7 @@
-import type { Region } from '../../generated/project'
+import type { Line, Point, Region } from '../../generated/project'
 import type { XY } from '../../features/regions/geometry'
 import { simplifyPolyline } from '../../features/regions/geometry'
-import { nextRegionId, nextZ } from '../../state/commands'
+import { nextLineId, nextPointId, nextRegionId, nextZ } from '../../state/commands'
 import { useEditorStore } from '../../state/editorStore'
 import { useProjectStore } from '../../state/projectStore'
 import type { Draft, PointerInfo, Tool, ToolContext } from './toolTypes'
@@ -11,6 +11,9 @@ const LASSO_SAMPLE_PX = 2
 // freehand stroke commits as a clean ring, not a jagged one.
 const LASSO_SIMPLIFY_PX = 4
 const MIN_DRAG_PX = 4
+// A double-click's second onDown adds a point at (near enough) the same
+// spot as the click before it; onDoubleClick strips it below this radius.
+const LINE_DEDUPE_PX = 4
 
 function commitRegion(geometry: Region['geometry']): void {
   const project = useProjectStore.getState().project
@@ -123,4 +126,98 @@ export class BoxTool implements Tool {
   private draft(to: XY): Draft {
     return { kind: this.shape, a: this.start!, b: to }
   }
+}
+
+function linesBlocked(): boolean {
+  const e = useEditorStore.getState()
+  return !e.linesVisible || e.linesLocked
+}
+
+function commitLine(points: XY[]): void {
+  const project = useProjectStore.getState().project
+  const editor = useEditorStore.getState()
+  const line: Line = {
+    id: nextLineId(project),
+    type: editor.drawLineType,
+    points: points.map((p): [number, number] => [p.x, p.y]) as [
+      [number, number],
+      [number, number],
+      ...[number, number][],
+    ],
+    width: editor.drawLineWidth,
+  }
+  useProjectStore.getState().dispatch({ kind: 'line/add', line })
+  useEditorStore.getState().selectLines([line.id])
+}
+
+// Click-to-place polyline: each click commits a vertex, a double-click
+// finishes the line (its own second onDown lands a near-duplicate vertex,
+// which onDoubleClick strips), Escape cancels via Tool.cancel.
+export class LineTool implements Tool {
+  private committed: XY[] | null = null
+  private live: XY | null = null
+
+  onDown(e: PointerInfo, ctx: ToolContext): boolean {
+    if (linesBlocked()) return false
+    if (!this.committed) {
+      this.committed = [e.world]
+    } else {
+      this.committed = [...this.committed, e.world]
+    }
+    this.live = e.world
+    ctx.setDraft({ kind: 'line', points: [...this.committed, this.live] })
+    return true
+  }
+
+  onMove(e: PointerInfo, ctx: ToolContext): void {
+    if (!this.committed) return
+    this.live = e.world
+    ctx.setDraft({ kind: 'line', points: [...this.committed, this.live] })
+  }
+
+  onUp(): void {
+    // Placement commits on click (onDown), not release; dragging the mouse
+    // down before releasing must not also move the just-placed vertex.
+  }
+
+  onDoubleClick(_e: PointerInfo, ctx: ToolContext): void {
+    const points = this.committed
+    this.committed = null
+    this.live = null
+    ctx.setDraft(null)
+    if (!points) return
+    const tolerance = LINE_DEDUPE_PX / ctx.scale()
+    const last = points[points.length - 1]
+    const prev = points[points.length - 2]
+    if (prev && Math.hypot(last.x - prev.x, last.y - prev.y) < tolerance) points.pop()
+    if (points.length < 2) return
+    commitLine(points)
+  }
+
+  cancel(ctx: ToolContext): void {
+    this.committed = null
+    this.live = null
+    ctx.setDraft(null)
+  }
+}
+
+// Click-to-place landmark/gate point.
+export class PointTool implements Tool {
+  onDown(e: PointerInfo): boolean {
+    const editor = useEditorStore.getState()
+    if (!editor.pointsVisible || editor.pointsLocked) return false
+    const project = useProjectStore.getState().project
+    const point: Point = {
+      id: nextPointId(project),
+      type: editor.drawPointType,
+      position: [e.world.x, e.world.y],
+    }
+    useProjectStore.getState().dispatch({ kind: 'point/add', point })
+    useEditorStore.getState().selectPoints([point.id])
+    return true
+  }
+
+  onMove(): void {}
+  onUp(): void {}
+  cancel(): void {}
 }

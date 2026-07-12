@@ -7,12 +7,14 @@ export type PointerInfo = {
 }
 
 // In-progress drawing geometry (and the select tool's marquee), rendered by
-// VectorLayer until committed.
+// VectorLayer until committed. `line`'s last point is the live cursor
+// position (not yet a committed vertex).
 export type Draft =
   | { kind: 'lasso'; points: XY[] }
   | { kind: 'rect'; a: XY; b: XY }
   | { kind: 'ellipse'; a: XY; b: XY }
   | { kind: 'marquee'; a: XY; b: XY }
+  | { kind: 'line'; points: XY[] }
 
 // What tools need from the canvas: screen-tolerance conversion and draft
 // display. Document/selection access goes straight to the zustand stores —

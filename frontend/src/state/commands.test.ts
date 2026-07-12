@@ -1,12 +1,18 @@
 import { describe, expect, test } from 'vitest'
-import type { Region, Underlay, WorldBuilderProject } from '../generated/project'
+import type { Line, Point, Region, Underlay, WorldBuilderProject } from '../generated/project'
 import type { Command } from './commands'
 import {
   applyCommand,
+  nextLineId,
+  nextPointId,
   nextRegionId,
   nextZ,
+  removeLinesCommand,
+  removePointsCommand,
   removeRegionsCommand,
   reorderCommand,
+  replaceLineCommand,
+  replacePointCommand,
   replaceRegionCommand,
   replaceUnderlayCommand,
   stackingOrder,
@@ -22,6 +28,23 @@ function region(id: string, z: number, overrides: Partial<Region> = {}): Region 
     geometry: { kind: 'rect', x: 0, y: 0, width: 100, height: 100 },
     ...overrides,
   }
+}
+
+function line(id: string, overrides: Partial<Line> = {}): Line {
+  return {
+    id,
+    type: 'wall',
+    width: 8,
+    points: [
+      [0, 0],
+      [100, 0],
+    ],
+    ...overrides,
+  }
+}
+
+function point(id: string, overrides: Partial<Point> = {}): Point {
+  return { id, type: 'landmark', position: [0, 0], ...overrides }
 }
 
 function projectWith(...regions: Region[]): WorldBuilderProject {
@@ -171,5 +194,87 @@ describe('id and z allocation for newly drawn regions', () => {
     const p = projectWith(region('a', 7))
     expect(nextZ(p)).toBe(8)
     expect(nextZ(projectWith())).toBe(0)
+  })
+})
+
+describe('line/add,remove,replace apply/undo', () => {
+  test('line/add', () => {
+    const p = { ...createDefaultProject(), lines: [line('a')] }
+    const cmd: Command = { kind: 'line/add', line: line('b') }
+    expect(applyCommand(p, cmd).lines.map((l) => l.id)).toEqual(['a', 'b'])
+    roundTrip(p, cmd)
+  })
+
+  test('line/remove restores array position', () => {
+    const p = { ...createDefaultProject(), lines: [line('a'), line('b'), line('c')] }
+    const cmd = removeLinesCommand(p, ['b'])
+    const applied = applyCommand(p, cmd)
+    expect(applied.lines.map((l) => l.id)).toEqual(['a', 'c'])
+    expect(undoCommand(applied, cmd).lines.map((l) => l.id)).toEqual(['a', 'b', 'c'])
+    roundTrip(p, cmd)
+  })
+
+  test('line/replace covers type/width/style/points edits', () => {
+    const p = { ...createDefaultProject(), lines: [line('a')] }
+    const cmd = replaceLineCommand(p, 'a', { type: 'road', width: 4, style: 'dashed' })!
+    const applied = applyCommand(p, cmd)
+    expect(applied.lines[0]).toMatchObject({ type: 'road', width: 4, style: 'dashed' })
+    roundTrip(p, cmd)
+  })
+
+  test('replaceLineCommand returns null for unknown ids', () => {
+    expect(
+      replaceLineCommand({ ...createDefaultProject(), lines: [] }, 'ghost', { width: 1 }),
+    ).toBeNull()
+  })
+
+  test('nextLineId skips taken ids', () => {
+    const p = { ...createDefaultProject(), lines: [line('line-1'), line('line-2')] }
+    expect(nextLineId(p)).toBe('line-3')
+  })
+})
+
+describe('point/add,remove,replace apply/undo', () => {
+  test('point/add', () => {
+    const p = { ...createDefaultProject(), points: [point('a')] }
+    const cmd: Command = { kind: 'point/add', point: point('b') }
+    expect(applyCommand(p, cmd).points.map((pt) => pt.id)).toEqual(['a', 'b'])
+    roundTrip(p, cmd)
+  })
+
+  test('point/remove restores array position', () => {
+    const p = { ...createDefaultProject(), points: [point('a'), point('b'), point('c')] }
+    const cmd = removePointsCommand(p, ['b'])
+    const applied = applyCommand(p, cmd)
+    expect(applied.points.map((pt) => pt.id)).toEqual(['a', 'c'])
+    expect(undoCommand(applied, cmd).points.map((pt) => pt.id)).toEqual(['a', 'b', 'c'])
+    roundTrip(p, cmd)
+  })
+
+  test('point/replace covers type/label/sizeHint/position edits', () => {
+    const p = { ...createDefaultProject(), points: [point('a')] }
+    const cmd = replacePointCommand(p, 'a', {
+      type: 'gate',
+      label: 'North Gate',
+      sizeHint: 'large',
+    })!
+    const applied = applyCommand(p, cmd)
+    expect(applied.points[0]).toMatchObject({
+      type: 'gate',
+      label: 'North Gate',
+      sizeHint: 'large',
+    })
+    roundTrip(p, cmd)
+  })
+
+  test('replacePointCommand returns null for unknown ids', () => {
+    expect(
+      replacePointCommand({ ...createDefaultProject(), points: [] }, 'ghost', { label: 'x' }),
+    ).toBeNull()
+  })
+
+  test('nextPointId skips taken ids', () => {
+    const p = { ...createDefaultProject(), points: [point('point-1'), point('point-2')] }
+    expect(nextPointId(p)).toBe('point-3')
   })
 })

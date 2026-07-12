@@ -1,7 +1,10 @@
 import { Container, Graphics } from 'pixi.js'
-import type { Line, Region, WorldBuilderProject } from '../../generated/project'
+import type { Line, Point, Region, WorldBuilderProject } from '../../generated/project'
 import { geometryCenter, outlineOf } from '../../features/regions/geometry'
 import { handlesFor } from '../../features/regions/handles'
+import { dashSegments } from '../../features/lines/geometry'
+import { handlesForLine } from '../../features/lines/handles'
+import { LINE_COLORS } from '../../features/lines/style'
 import { isBelowMinSize } from '../../features/regions/minSize'
 import { stackingOrder } from '../../state/commands'
 import type { OverlayTheme } from '../overlayTheme'
@@ -10,22 +13,28 @@ import type { Draft } from '../tools/toolTypes'
 export type VectorScene = {
   project: WorldBuilderProject
   selectedRegionIds: readonly string[]
+  selectedLineIds: readonly string[]
+  selectedPointIds: readonly string[]
   regionsVisible: boolean
+  linesVisible: boolean
+  pointsVisible: boolean
   draft: Draft | null
 }
 
-const LINE_COLORS: Record<Line['type'], string> = {
-  wall: '#6e6558',
-  road: '#a59b88',
-  river: '#58a6d4',
-  canal: '#58a6d4',
-  coastline: '#7a8a94',
+// Screen-px radius by sizeHint (points carry no vocabulary colour like
+// region maskColor — schema/project-v1.md — so size is the only per-point
+// visual besides the shared marker colour).
+const POINT_RADIUS_PX: Record<NonNullable<Point['sizeHint']>, number> = {
+  small: 4,
+  medium: 6,
+  large: 8,
 }
 
 // Semantic vector overlay: regions in compiler stacking order (each filled
-// with its vocabulary mask colour), lines read-only until #18, then selection
-// chrome, min-size warnings, and the in-progress draw draft. All geometry is
-// world-space; stroke/handle sizes divide by scale to hold screen size.
+// with its vocabulary mask colour), then lines, then points (topmost —
+// smallest target, wins hit-testing), each with selection chrome and edit
+// handles, then the in-progress draw draft. All geometry is world-space;
+// stroke/handle sizes divide by scale to hold screen size.
 export class VectorLayer extends Container {
   private readonly g = new Graphics()
   private readonly theme: OverlayTheme
@@ -68,7 +77,23 @@ export class VectorLayer extends Container {
       }
     }
 
-    for (const line of project.lines) this.drawLine(line, px)
+    if (scene.linesVisible) {
+      const selectedLines = new Set(scene.selectedLineIds)
+      for (const line of project.lines) {
+        if (selectedLines.has(line.id)) this.drawLineSelection(line, px)
+        this.drawLine(line, px)
+      }
+      if (scene.selectedLineIds.length === 1) {
+        const only = project.lines.find((l) => l.id === scene.selectedLineIds[0])
+        if (only) this.drawLineHandles(only, px)
+      }
+    }
+
+    if (scene.pointsVisible) {
+      const selectedPoints = new Set(scene.selectedPointIds)
+      for (const point of project.points) this.drawPoint(point, px, selectedPoints.has(point.id))
+    }
+
     if (scene.draft) this.drawDraft(scene.draft, px)
   }
 
@@ -113,16 +138,54 @@ export class VectorLayer extends Container {
   }
 
   private drawLine(line: Line, px: (n: number) => number): void {
+    const width = Math.max(line.width, px(1.5))
+    const stroke = { width, color: LINE_COLORS[line.type], alpha: 0.85 }
+    if (line.style === 'dashed') {
+      const xy = line.points.map(([x, y]) => ({ x, y }))
+      for (const [a, b] of dashSegments(xy, px(10), px(6))) {
+        this.g.moveTo(a.x, a.y).lineTo(b.x, b.y).stroke(stroke)
+      }
+      return
+    }
     this.g
       .poly(
         line.points.flatMap((p) => [p[0], p[1]]),
         false,
       )
-      .stroke({
-        width: Math.max(line.width, px(1.5)),
-        color: LINE_COLORS[line.type],
-        alpha: 0.85,
-      })
+      .stroke(stroke)
+  }
+
+  // A halo stroke behind the line's own colour, in the shared selection
+  // colour — reads as a highlight without hiding the type colour on top.
+  private drawLineSelection(line: Line, px: (n: number) => number): void {
+    this.g
+      .poly(
+        line.points.flatMap((p) => [p[0], p[1]]),
+        false,
+      )
+      .stroke({ width: Math.max(line.width, px(1.5)) + px(4), color: this.theme.selection })
+  }
+
+  private drawLineHandles(line: Line, px: (n: number) => number): void {
+    for (const handle of handlesForLine(line.points)) {
+      const r = px(4)
+      this.g
+        .rect(handle.at.x - r, handle.at.y - r, r * 2, r * 2)
+        .fill({ color: this.theme.handle })
+        .stroke({ width: px(1.5), color: this.theme.selection })
+    }
+  }
+
+  private drawPoint(point: Point, px: (n: number) => number, selected: boolean): void {
+    const [x, y] = point.position
+    const r = px(POINT_RADIUS_PX[point.sizeHint ?? 'medium'])
+    if (selected) {
+      this.g.circle(x, y, r + px(3)).stroke({ width: px(2), color: this.theme.selection })
+    }
+    this.g
+      .circle(x, y, r)
+      .fill({ color: this.theme.marker })
+      .stroke({ width: px(1.5), color: this.theme.handle })
   }
 
   private drawDraft(draft: Draft, px: (n: number) => number): void {
@@ -135,6 +198,19 @@ export class VectorLayer extends Container {
           false,
         )
         .stroke(stroke)
+      return
+    }
+    if (draft.kind === 'line') {
+      if (draft.points.length < 2) return
+      this.g
+        .poly(
+          draft.points.flatMap((p) => [p.x, p.y]),
+          false,
+        )
+        .stroke(stroke)
+      for (const p of draft.points) {
+        this.g.circle(p.x, p.y, px(3)).fill({ color: this.theme.draft })
+      }
       return
     }
     const x = Math.min(draft.a.x, draft.b.x)
