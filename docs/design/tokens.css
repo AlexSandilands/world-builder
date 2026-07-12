@@ -35,6 +35,7 @@
   --accent-ink-soft: rgba(88, 166, 212, 0.18);
   --accent-verdigris: #5fa88c; /* success, completed generations */
   --accent-seal: #c2554b; /* destructive, errors (wax-seal red) */
+  --accent-seal-soft: rgba(194, 85, 75, 0.1);
   --accent-amber: #d98a3f; /* warnings, dirty-region indication */
   --accent-amber-soft: rgba(217, 138, 63, 0.18);
 
@@ -128,6 +129,7 @@
   --accent-ink-soft: rgba(42, 107, 148, 0.14);
   --accent-verdigris: #3d7a61;
   --accent-seal: #a63d34;
+  --accent-seal-soft: rgba(166, 61, 52, 0.14);
   --accent-amber: #a8641f;
   --accent-amber-soft: rgba(168, 100, 31, 0.16);
 
