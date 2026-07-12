@@ -150,54 +150,71 @@ function commitLine(points: XY[]): void {
   useEditorStore.getState().selectLines([line.id])
 }
 
-// Click-to-place polyline: each click commits a vertex, a double-click
-// finishes the line (its own second onDown lands a near-duplicate vertex,
-// which onDoubleClick strips), Escape cancels via Tool.cancel.
+// Click-to-place polyline. The vertex commits on *release* — a press starts
+// placing it, dragging fine-places it, letting go lands it exactly where the
+// preview shows (PR #59 round 1: committing on press made the release-point
+// preview a lie). Between clicks the rubber band follows the cursor (hover
+// onMove routing in CanvasController). A double-click or Enter finishes the
+// line; Escape cancels via Tool.cancel.
 export class LineTool implements Tool {
   private committed: XY[] | null = null
-  private live: XY | null = null
+  // True between a pointer press and its release: the vertex being placed.
+  private pending = false
 
   onDown(e: PointerInfo, ctx: ToolContext): boolean {
     if (linesBlocked()) return false
-    if (!this.committed) {
-      this.committed = [e.world]
-    } else {
-      this.committed = [...this.committed, e.world]
-    }
-    this.live = e.world
-    ctx.setDraft({ kind: 'line', points: [...this.committed, this.live] })
+    this.committed ??= []
+    this.pending = true
+    this.draft(ctx, e.world)
     return true
   }
 
   onMove(e: PointerInfo, ctx: ToolContext): void {
     if (!this.committed) return
-    this.live = e.world
-    ctx.setDraft({ kind: 'line', points: [...this.committed, this.live] })
+    this.draft(ctx, e.world)
   }
 
-  onUp(): void {
-    // Placement commits on click (onDown), not release; dragging the mouse
-    // down before releasing must not also move the just-placed vertex.
+  onUp(e: PointerInfo, ctx: ToolContext): void {
+    if (!this.committed || !this.pending) return
+    this.pending = false
+    this.committed = [...this.committed, e.world]
+    this.draft(ctx, e.world)
   }
 
   onDoubleClick(_e: PointerInfo, ctx: ToolContext): void {
     const points = this.committed
-    this.committed = null
-    this.live = null
-    ctx.setDraft(null)
     if (!points) return
+    // The double-click's own two clicks each committed a vertex at (nearly)
+    // the same spot; strip the trailing duplicates before finishing.
     const tolerance = LINE_DEDUPE_PX / ctx.scale()
-    const last = points[points.length - 1]
-    const prev = points[points.length - 2]
-    if (prev && Math.hypot(last.x - prev.x, last.y - prev.y) < tolerance) points.pop()
-    if (points.length < 2) return
+    while (points.length >= 2) {
+      const last = points[points.length - 1]
+      const prev = points[points.length - 2]
+      if (Math.hypot(last.x - prev.x, last.y - prev.y) >= tolerance) break
+      points.pop()
+    }
+    this.finish(ctx)
+  }
+
+  // Enter finishes too (CanvasController routes it here). No dedupe: every
+  // vertex was a deliberate click, unlike the double-click's phantom pair.
+  finish(ctx: ToolContext): void {
+    const points = this.committed
+    this.committed = null
+    this.pending = false
+    ctx.setDraft(null)
+    if (!points || points.length < 2) return
     commitLine(points)
   }
 
   cancel(ctx: ToolContext): void {
     this.committed = null
-    this.live = null
+    this.pending = false
     ctx.setDraft(null)
+  }
+
+  private draft(ctx: ToolContext, cursor: XY): void {
+    ctx.setDraft({ kind: 'line', points: [...this.committed!, cursor] })
   }
 }
 

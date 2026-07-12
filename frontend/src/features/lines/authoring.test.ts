@@ -30,20 +30,25 @@ const schema = JSON.parse(
 
 const ctx: ToolContext = { scale: () => 1, setDraft: () => {} }
 
-// Places every vertex via onDown, then finishes with the real double-click
-// gesture: a first click on the final vertex, a second (near-duplicate) click
-// there, then onDoubleClick — exactly what a canvas double-click fires.
+function click(tool: LineTool, x: number, y: number): void {
+  tool.onDown({ world: { x, y }, shiftKey: false, altKey: false }, ctx)
+  tool.onUp({ world: { x, y }, shiftKey: false, altKey: false }, ctx)
+}
+
+// Places every vertex with a real click (down + up — vertices commit on
+// release), then finishes with the real double-click gesture: the dblclick
+// event's own two clicks land on the final vertex (the first commits it, the
+// second a near-duplicate that onDoubleClick strips), then the dblclick
+// handler fires — exactly the sequence a browser delivers.
 function drawLine(points: Line['points']): string {
   const tool = new LineTool()
   for (let i = 0; i < points.length - 1; i++) {
-    const [x, y] = points[i]
-    tool.onDown({ world: { x, y }, shiftKey: false, altKey: false }, ctx)
+    click(tool, points[i][0], points[i][1])
   }
   const [lx, ly] = points[points.length - 1]
-  const last = { world: { x: lx, y: ly }, shiftKey: false, altKey: false }
-  tool.onDown(last, ctx)
-  tool.onDown(last, ctx)
-  tool.onDoubleClick!(last, ctx)
+  click(tool, lx, ly)
+  click(tool, lx, ly)
+  tool.onDoubleClick!({ world: { x: lx, y: ly }, shiftKey: false, altKey: false }, ctx)
   return useEditorStore.getState().selectedLineIds[0]
 }
 

@@ -1,7 +1,8 @@
-import { act, render, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, expect, test, vi } from 'vitest'
 import { CanvasView } from './CanvasView'
 import { createDefaultProject } from '../state/defaultProject'
+import { useEditorStore } from '../state/editorStore'
 import { useHistoryStore } from '../state/historyStore'
 import { useProjectStore } from '../state/projectStore'
 
@@ -28,6 +29,7 @@ beforeEach(() => {
   instances.length = 0
   useProjectStore.setState({ project: createDefaultProject() })
   useHistoryStore.getState().clear()
+  useEditorStore.setState({ tool: 'select' })
 })
 
 // Regression for PR #43 review: document mutations replace the project object
@@ -56,4 +58,17 @@ test('project changes do not remount the controller', async () => {
   expect(instances.length).toBe(mountedControllers)
   expect(controller.destroy).not.toHaveBeenCalled()
   expect(useProjectStore.getState().project.regions).toHaveLength(1)
+})
+
+// PR #59 round 1 finding 1: finishing a line was undiscoverable. The gesture
+// hint must show while the line tool is active and go away when it is not.
+test('the line tool shows a finish/cancel gesture hint', () => {
+  render(<CanvasView />)
+  expect(screen.queryByRole('status')).toBeNull()
+
+  act(() => useEditorStore.getState().setTool('line'))
+  expect(screen.getByRole('status').textContent).toMatch(/double-click or Enter/i)
+
+  act(() => useEditorStore.getState().setTool('select'))
+  expect(screen.queryByRole('status')).toBeNull()
 })

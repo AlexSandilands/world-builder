@@ -31,5 +31,7 @@ export interface Tool {
   onMove(e: PointerInfo, ctx: ToolContext): void
   onUp(e: PointerInfo, ctx: ToolContext): void
   onDoubleClick?(e: PointerInfo, ctx: ToolContext): void
+  // Completes a multi-click gesture (line tool: Enter finishes the polyline).
+  finish?(ctx: ToolContext): void
   cancel(ctx: ToolContext): void
 }

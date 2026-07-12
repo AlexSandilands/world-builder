@@ -109,3 +109,21 @@ body {
   border-color: var(--accent-brass);
   color: var(--accent-brass-hover);
 }
+
+/* Gesture hint for multi-click tools (line): floats bottom-centre of the
+   canvas, styled like the toolbar's floating chrome. */
+.canvas-hint {
+  position: absolute;
+  bottom: var(--space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-float);
+  background: var(--surface-raised);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-float);
+  color: var(--text-secondary);
+  font-size: var(--text-xs);
+  pointer-events: none;
+  white-space: nowrap;
+}

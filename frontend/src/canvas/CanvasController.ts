@@ -237,7 +237,13 @@ export class CanvasController {
         this.activeDrag.onMove(this.pointerInfo(e), this.toolContext)
         return
       }
-      if (!this.panning) return
+      if (!this.panning) {
+        // Hover (no button held): a multi-click tool's rubber band (line)
+        // must track the cursor between clicks. Other tools' onMove no-ops
+        // without an in-progress gesture, so routing every hover is safe.
+        this.activeTool().onMove(this.pointerInfo(e), this.toolContext)
+        return
+      }
       this.view = panBy(this.view, e.clientX - this.last.x, e.clientY - this.last.y)
       this.last = { x: e.clientX, y: e.clientY }
       this.apply()
@@ -273,6 +279,13 @@ export class CanvasController {
         // sits mid-gesture between pointer-up events, when it is not the
         // `activeDrag` cancelActive() reaches.
         this.activeTool().cancel(this.toolContext)
+        this.renderVectors()
+        return
+      }
+      if (e.key === 'Enter' && !isTypingTarget(document.activeElement)) {
+        // Finish a multi-click gesture (line tool). Tools without one have
+        // no finish() and the keypress falls through untouched.
+        this.activeTool().finish?.(this.toolContext)
         this.renderVectors()
         return
       }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { importUnderlay } from '../features/underlay/import'
+import { useEditorStore } from '../state/editorStore'
 import { useViewportStore } from '../state/viewportStore'
 import { CanvasContextMenu } from '../ui/CanvasContextMenu'
 import type { ContextMenuRequest } from './CanvasController'
@@ -13,6 +14,7 @@ export function CanvasView() {
   const hostRef = useRef<HTMLDivElement>(null)
   const controllerRef = useRef<CanvasController | null>(null)
   const fitNonce = useViewportStore((s) => s.fitNonce)
+  const tool = useEditorStore((s) => s.tool)
   const [menu, setMenu] = useState<ContextMenuRequest | null>(null)
 
   useEffect(() => {
@@ -60,6 +62,13 @@ export function CanvasView() {
           if (file) void importUnderlay(file)
         }}
       />
+      {tool === 'line' && (
+        // Multi-click gestures need their exit spelled out (PR #59 round 1:
+        // completion was undiscoverable).
+        <div className="canvas-hint" role="status">
+          Click to place vertices — double-click or Enter finishes, Esc cancels
+        </div>
+      )}
       {menu && <CanvasContextMenu request={menu} onClose={() => setMenu(null)} />}
     </>
   )
