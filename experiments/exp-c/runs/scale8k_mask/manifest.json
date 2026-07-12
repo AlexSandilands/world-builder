@@ -1,0 +1,1908 @@
+{
+  "cn_end": 1.0,
+  "cn_strength": 0.6,
+  "denoise": 0.5,
+  "overlap": 256,
+  "run_id": "scale8k_mask",
+  "size": 8192,
+  "source": "run:dn050_ov256_mask",
+  "strategy": "mask",
+  "tile": 1024,
+  "feather": 256,
+  "sampler": {
+    "steps": 30,
+    "cfg": 7.0,
+    "name": "dpmpp_2m",
+    "scheduler": "karras"
+  },
+  "seed_base": 1001,
+  "grid": [
+    "x0_y0",
+    "x768_y0",
+    "x1536_y0",
+    "x2304_y0",
+    "x3072_y0",
+    "x3840_y0",
+    "x4608_y0",
+    "x5376_y0",
+    "x6144_y0",
+    "x6912_y0",
+    "x7168_y0",
+    "x0_y768",
+    "x768_y768",
+    "x1536_y768",
+    "x2304_y768",
+    "x3072_y768",
+    "x3840_y768",
+    "x4608_y768",
+    "x5376_y768",
+    "x6144_y768",
+    "x6912_y768",
+    "x7168_y768",
+    "x0_y1536",
+    "x768_y1536",
+    "x1536_y1536",
+    "x2304_y1536",
+    "x3072_y1536",
+    "x3840_y1536",
+    "x4608_y1536",
+    "x5376_y1536",
+    "x6144_y1536",
+    "x6912_y1536",
+    "x7168_y1536",
+    "x0_y2304",
+    "x768_y2304",
+    "x1536_y2304",
+    "x2304_y2304",
+    "x3072_y2304",
+    "x3840_y2304",
+    "x4608_y2304",
+    "x5376_y2304",
+    "x6144_y2304",
+    "x6912_y2304",
+    "x7168_y2304",
+    "x0_y3072",
+    "x768_y3072",
+    "x1536_y3072",
+    "x2304_y3072",
+    "x3072_y3072",
+    "x3840_y3072",
+    "x4608_y3072",
+    "x5376_y3072",
+    "x6144_y3072",
+    "x6912_y3072",
+    "x7168_y3072",
+    "x0_y3840",
+    "x768_y3840",
+    "x1536_y3840",
+    "x2304_y3840",
+    "x3072_y3840",
+    "x3840_y3840",
+    "x4608_y3840",
+    "x5376_y3840",
+    "x6144_y3840",
+    "x6912_y3840",
+    "x7168_y3840",
+    "x0_y4608",
+    "x768_y4608",
+    "x1536_y4608",
+    "x2304_y4608",
+    "x3072_y4608",
+    "x3840_y4608",
+    "x4608_y4608",
+    "x5376_y4608",
+    "x6144_y4608",
+    "x6912_y4608",
+    "x7168_y4608",
+    "x0_y5376",
+    "x768_y5376",
+    "x1536_y5376",
+    "x2304_y5376",
+    "x3072_y5376",
+    "x3840_y5376",
+    "x4608_y5376",
+    "x5376_y5376",
+    "x6144_y5376",
+    "x6912_y5376",
+    "x7168_y5376",
+    "x0_y6144",
+    "x768_y6144",
+    "x1536_y6144",
+    "x2304_y6144",
+    "x3072_y6144",
+    "x3840_y6144",
+    "x4608_y6144",
+    "x5376_y6144",
+    "x6144_y6144",
+    "x6912_y6144",
+    "x7168_y6144",
+    "x0_y6912",
+    "x768_y6912",
+    "x1536_y6912",
+    "x2304_y6912",
+    "x3072_y6912",
+    "x3840_y6912",
+    "x4608_y6912",
+    "x5376_y6912",
+    "x6144_y6912",
+    "x6912_y6912",
+    "x7168_y6912",
+    "x0_y7168",
+    "x768_y7168",
+    "x1536_y7168",
+    "x2304_y7168",
+    "x3072_y7168",
+    "x3840_y7168",
+    "x4608_y7168",
+    "x5376_y7168",
+    "x6144_y7168",
+    "x6912_y7168",
+    "x7168_y7168"
+  ],
+  "min_region_fraction": 0.01,
+  "tile_regions": {
+    "x0_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.8352
+      },
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.1648
+      }
+    ],
+    "x768_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.5845
+      },
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.4155
+      }
+    ],
+    "x1536_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.8949
+      },
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.1051
+      }
+    ],
+    "x2304_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x3072_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x3840_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x4608_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x5376_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x6144_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9576
+      },
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.0424
+      }
+    ],
+    "x6912_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9085
+      },
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.0915
+      }
+    ],
+    "x7168_y0": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9503
+      },
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.0497
+      }
+    ],
+    "x0_y768": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.6542
+      },
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.3458
+      }
+    ],
+    "x768_y768": [
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.9893
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.0107
+      }
+    ],
+    "x1536_y768": [
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.5078
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.4922
+      }
+    ],
+    "x2304_y768": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9792
+      },
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.0208
+      }
+    ],
+    "x3072_y768": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.858
+      },
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.1419
+      }
+    ],
+    "x3840_y768": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.902
+      },
+      {
+        "id": "city-gate-plaza-01",
+        "type": "city_gate_plaza",
+        "fraction": 0.0536
+      },
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.0442
+      }
+    ],
+    "x4608_y768": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9994
+      }
+    ],
+    "x5376_y768": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x6144_y768": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.7602
+      },
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.2398
+      }
+    ],
+    "x6912_y768": [
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.83
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.17
+      }
+    ],
+    "x7168_y768": [
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.7402
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.2598
+      }
+    ],
+    "x0_y1536": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.8282
+      },
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.1718
+      }
+    ],
+    "x768_y1536": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.548
+      },
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.452
+      }
+    ],
+    "x1536_y1536": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.7189
+      },
+      {
+        "id": "tannery-01",
+        "type": "tannery",
+        "fraction": 0.1639
+      },
+      {
+        "id": "forest-01",
+        "type": "forest",
+        "fraction": 0.0991
+      },
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.018
+      }
+    ],
+    "x2304_y1536": [
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.5073
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.3412
+      },
+      {
+        "id": "tannery-01",
+        "type": "tannery",
+        "fraction": 0.1313
+      },
+      {
+        "id": "stables-district-01",
+        "type": "stables_district",
+        "fraction": 0.02
+      }
+    ],
+    "x3072_y1536": [
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.708
+      },
+      {
+        "id": "stables-district-01",
+        "type": "stables_district",
+        "fraction": 0.1836
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.108
+      }
+    ],
+    "x3840_y1536": [
+      {
+        "id": "city-gate-plaza-01",
+        "type": "city_gate_plaza",
+        "fraction": 0.5163
+      },
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.1703
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.1621
+      },
+      {
+        "id": "artisan-quarter-01",
+        "type": "artisan_quarter",
+        "fraction": 0.0888
+      },
+      {
+        "id": "stables-district-01",
+        "type": "stables_district",
+        "fraction": 0.0621
+      }
+    ],
+    "x4608_y1536": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.5097
+      },
+      {
+        "id": "city-gate-plaza-01",
+        "type": "city_gate_plaza",
+        "fraction": 0.4542
+      },
+      {
+        "id": "residential-dense-01",
+        "type": "residential_dense",
+        "fraction": 0.0319
+      }
+    ],
+    "x5376_y1536": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9045
+      },
+      {
+        "id": "residential-dense-01",
+        "type": "residential_dense",
+        "fraction": 0.0619
+      },
+      {
+        "id": "city-gate-plaza-01",
+        "type": "city_gate_plaza",
+        "fraction": 0.0336
+      }
+    ],
+    "x6144_y1536": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.886
+      },
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.114
+      }
+    ],
+    "x6912_y1536": [
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.5608
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.4392
+      }
+    ],
+    "x7168_y1536": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.5086
+      },
+      {
+        "id": "forest-02",
+        "type": "forest",
+        "fraction": 0.4914
+      }
+    ],
+    "x0_y2304": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x768_y2304": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9803
+      },
+      {
+        "id": "tannery-01",
+        "type": "tannery",
+        "fraction": 0.0197
+      }
+    ],
+    "x1536_y2304": [
+      {
+        "id": "tannery-01",
+        "type": "tannery",
+        "fraction": 0.6519
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.3203
+      },
+      {
+        "id": "granary-01",
+        "type": "granary",
+        "fraction": 0.0276
+      }
+    ],
+    "x2304_y2304": [
+      {
+        "id": "stables-district-01",
+        "type": "stables_district",
+        "fraction": 0.3777
+      },
+      {
+        "id": "tannery-01",
+        "type": "tannery",
+        "fraction": 0.329
+      },
+      {
+        "id": "granary-01",
+        "type": "granary",
+        "fraction": 0.1491
+      },
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.144
+      }
+    ],
+    "x3072_y2304": [
+      {
+        "id": "stables-district-01",
+        "type": "stables_district",
+        "fraction": 0.8225
+      },
+      {
+        "id": "guild-hall-01",
+        "type": "guild_hall",
+        "fraction": 0.1094
+      },
+      {
+        "id": "cemetery-01",
+        "type": "cemetery",
+        "fraction": 0.0661
+      }
+    ],
+    "x3840_y2304": [
+      {
+        "id": "artisan-quarter-01",
+        "type": "artisan_quarter",
+        "fraction": 0.5838
+      },
+      {
+        "id": "stables-district-01",
+        "type": "stables_district",
+        "fraction": 0.1956
+      },
+      {
+        "id": "city-gate-plaza-01",
+        "type": "city_gate_plaza",
+        "fraction": 0.1039
+      },
+      {
+        "id": "noble-quarter-01",
+        "type": "noble_quarter",
+        "fraction": 0.061
+      },
+      {
+        "id": "guild-hall-01",
+        "type": "guild_hall",
+        "fraction": 0.0545
+      }
+    ],
+    "x4608_y2304": [
+      {
+        "id": "artisan-quarter-01",
+        "type": "artisan_quarter",
+        "fraction": 0.4093
+      },
+      {
+        "id": "city-gate-plaza-01",
+        "type": "city_gate_plaza",
+        "fraction": 0.2952
+      },
+      {
+        "id": "residential-dense-01",
+        "type": "residential_dense",
+        "fraction": 0.1881
+      },
+      {
+        "id": "residential-modest-01",
+        "type": "residential_modest",
+        "fraction": 0.1041
+      }
+    ],
+    "x5376_y2304": [
+      {
+        "id": "residential-dense-01",
+        "type": "residential_dense",
+        "fraction": 0.6527
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.2286
+      },
+      {
+        "id": "residential-modest-01",
+        "type": "residential_modest",
+        "fraction": 0.0862
+      },
+      {
+        "id": "city-gate-plaza-01",
+        "type": "city_gate_plaza",
+        "fraction": 0.0273
+      }
+    ],
+    "x6144_y2304": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.8025
+      },
+      {
+        "id": "residential-dense-01",
+        "type": "residential_dense",
+        "fraction": 0.1974
+      }
+    ],
+    "x6912_y2304": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x7168_y2304": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x0_y3072": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x768_y3072": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9498
+      },
+      {
+        "id": "tannery-01",
+        "type": "tannery",
+        "fraction": 0.0407
+      }
+    ],
+    "x1536_y3072": [
+      {
+        "id": "tannery-01",
+        "type": "tannery",
+        "fraction": 0.4388
+      },
+      {
+        "id": "city-gate-plaza-03",
+        "type": "city_gate_plaza",
+        "fraction": 0.219
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.2008
+      },
+      {
+        "id": "granary-01",
+        "type": "granary",
+        "fraction": 0.1414
+      }
+    ],
+    "x2304_y3072": [
+      {
+        "id": "granary-01",
+        "type": "granary",
+        "fraction": 0.6942
+      },
+      {
+        "id": "stables-district-01",
+        "type": "stables_district",
+        "fraction": 0.0987
+      },
+      {
+        "id": "guild-hall-01",
+        "type": "guild_hall",
+        "fraction": 0.0983
+      },
+      {
+        "id": "tannery-01",
+        "type": "tannery",
+        "fraction": 0.0742
+      },
+      {
+        "id": "city-gate-plaza-03",
+        "type": "city_gate_plaza",
+        "fraction": 0.0344
+      }
+    ],
+    "x3072_y3072": [
+      {
+        "id": "guild-hall-01",
+        "type": "guild_hall",
+        "fraction": 0.6456
+      },
+      {
+        "id": "stables-district-01",
+        "type": "stables_district",
+        "fraction": 0.152
+      },
+      {
+        "id": "keep-01",
+        "type": "keep",
+        "fraction": 0.1232
+      },
+      {
+        "id": "granary-01",
+        "type": "granary",
+        "fraction": 0.0787
+      }
+    ],
+    "x3840_y3072": [
+      {
+        "id": "noble-quarter-01",
+        "type": "noble_quarter",
+        "fraction": 0.4827
+      },
+      {
+        "id": "keep-01",
+        "type": "keep",
+        "fraction": 0.2099
+      },
+      {
+        "id": "guild-hall-01",
+        "type": "guild_hall",
+        "fraction": 0.1502
+      },
+      {
+        "id": "artisan-quarter-01",
+        "type": "artisan_quarter",
+        "fraction": 0.1487
+      }
+    ],
+    "x4608_y3072": [
+      {
+        "id": "residential-modest-01",
+        "type": "residential_modest",
+        "fraction": 0.5133
+      },
+      {
+        "id": "noble-quarter-01",
+        "type": "noble_quarter",
+        "fraction": 0.2981
+      },
+      {
+        "id": "artisan-quarter-01",
+        "type": "artisan_quarter",
+        "fraction": 0.1863
+      }
+    ],
+    "x5376_y3072": [
+      {
+        "id": "residential-modest-01",
+        "type": "residential_modest",
+        "fraction": 0.531
+      },
+      {
+        "id": "residential-dense-01",
+        "type": "residential_dense",
+        "fraction": 0.3393
+      },
+      {
+        "id": "slum-01",
+        "type": "slum",
+        "fraction": 0.1297
+      }
+    ],
+    "x6144_y3072": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.4207
+      },
+      {
+        "id": "residential-dense-01",
+        "type": "residential_dense",
+        "fraction": 0.3201
+      },
+      {
+        "id": "slum-01",
+        "type": "slum",
+        "fraction": 0.2589
+      }
+    ],
+    "x6912_y3072": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x7168_y3072": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x0_y3840": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x768_y3840": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9974
+      }
+    ],
+    "x1536_y3840": [
+      {
+        "id": "city-gate-plaza-03",
+        "type": "city_gate_plaza",
+        "fraction": 0.619
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.3218
+      },
+      {
+        "id": "granary-01",
+        "type": "granary",
+        "fraction": 0.0554
+      }
+    ],
+    "x2304_y3840": [
+      {
+        "id": "granary-01",
+        "type": "granary",
+        "fraction": 0.3724
+      },
+      {
+        "id": "barracks-01",
+        "type": "barracks",
+        "fraction": 0.3408
+      },
+      {
+        "id": "city-gate-plaza-03",
+        "type": "city_gate_plaza",
+        "fraction": 0.1924
+      },
+      {
+        "id": "market-square-01",
+        "type": "market_square",
+        "fraction": 0.0531
+      },
+      {
+        "id": "guild-hall-01",
+        "type": "guild_hall",
+        "fraction": 0.0412
+      }
+    ],
+    "x3072_y3840": [
+      {
+        "id": "market-square-01",
+        "type": "market_square",
+        "fraction": 0.4943
+      },
+      {
+        "id": "keep-01",
+        "type": "keep",
+        "fraction": 0.2096
+      },
+      {
+        "id": "guild-hall-01",
+        "type": "guild_hall",
+        "fraction": 0.1386
+      },
+      {
+        "id": "barracks-01",
+        "type": "barracks",
+        "fraction": 0.1081
+      },
+      {
+        "id": "granary-01",
+        "type": "granary",
+        "fraction": 0.0493
+      }
+    ],
+    "x3840_y3840": [
+      {
+        "id": "temple-district-01",
+        "type": "temple_district",
+        "fraction": 0.4261
+      },
+      {
+        "id": "keep-01",
+        "type": "keep",
+        "fraction": 0.3669
+      },
+      {
+        "id": "market-square-01",
+        "type": "market_square",
+        "fraction": 0.0927
+      },
+      {
+        "id": "noble-quarter-01",
+        "type": "noble_quarter",
+        "fraction": 0.0913
+      },
+      {
+        "id": "university-01",
+        "type": "university",
+        "fraction": 0.023
+      }
+    ],
+    "x4608_y3840": [
+      {
+        "id": "university-01",
+        "type": "university",
+        "fraction": 0.3551
+      },
+      {
+        "id": "temple-district-01",
+        "type": "temple_district",
+        "fraction": 0.254
+      },
+      {
+        "id": "residential-modest-01",
+        "type": "residential_modest",
+        "fraction": 0.2533
+      },
+      {
+        "id": "noble-quarter-01",
+        "type": "noble_quarter",
+        "fraction": 0.1374
+      }
+    ],
+    "x5376_y3840": [
+      {
+        "id": "residential-modest-01",
+        "type": "residential_modest",
+        "fraction": 0.3594
+      },
+      {
+        "id": "slum-01",
+        "type": "slum",
+        "fraction": 0.3417
+      },
+      {
+        "id": "university-01",
+        "type": "university",
+        "fraction": 0.1553
+      },
+      {
+        "id": "construction-site-01",
+        "type": "construction_site",
+        "fraction": 0.1436
+      }
+    ],
+    "x6144_y3840": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.485
+      },
+      {
+        "id": "slum-01",
+        "type": "slum",
+        "fraction": 0.3764
+      },
+      {
+        "id": "construction-site-01",
+        "type": "construction_site",
+        "fraction": 0.1384
+      }
+    ],
+    "x6912_y3840": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x7168_y3840": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x0_y4608": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.8125
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1323
+      },
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.0552
+      }
+    ],
+    "x768_y4608": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.6745
+      },
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.1946
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1309
+      }
+    ],
+    "x1536_y4608": [
+      {
+        "id": "city-gate-plaza-03",
+        "type": "city_gate_plaza",
+        "fraction": 0.2778
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.242
+      },
+      {
+        "id": "warehouse-district-01",
+        "type": "warehouse_district",
+        "fraction": 0.1966
+      },
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.146
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.137
+      }
+    ],
+    "x2304_y4608": [
+      {
+        "id": "barracks-01",
+        "type": "barracks",
+        "fraction": 0.6185
+      },
+      {
+        "id": "warehouse-district-01",
+        "type": "warehouse_district",
+        "fraction": 0.1603
+      },
+      {
+        "id": "city-gate-plaza-03",
+        "type": "city_gate_plaza",
+        "fraction": 0.1137
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.102
+      }
+    ],
+    "x3072_y4608": [
+      {
+        "id": "barracks-01",
+        "type": "barracks",
+        "fraction": 0.3647
+      },
+      {
+        "id": "market-square-01",
+        "type": "market_square",
+        "fraction": 0.3208
+      },
+      {
+        "id": "park-01",
+        "type": "park",
+        "fraction": 0.3134
+      }
+    ],
+    "x3840_y4608": [
+      {
+        "id": "park-01",
+        "type": "park",
+        "fraction": 0.4689
+      },
+      {
+        "id": "temple-district-01",
+        "type": "temple_district",
+        "fraction": 0.2405
+      },
+      {
+        "id": "university-01",
+        "type": "university",
+        "fraction": 0.17
+      },
+      {
+        "id": "market-square-01",
+        "type": "market_square",
+        "fraction": 0.1204
+      }
+    ],
+    "x4608_y4608": [
+      {
+        "id": "university-01",
+        "type": "university",
+        "fraction": 0.6626
+      },
+      {
+        "id": "city-gate-plaza-02",
+        "type": "city_gate_plaza",
+        "fraction": 0.241
+      },
+      {
+        "id": "park-01",
+        "type": "park",
+        "fraction": 0.0516
+      },
+      {
+        "id": "temple-district-01",
+        "type": "temple_district",
+        "fraction": 0.0403
+      }
+    ],
+    "x5376_y4608": [
+      {
+        "id": "city-gate-plaza-02",
+        "type": "city_gate_plaza",
+        "fraction": 0.3384
+      },
+      {
+        "id": "slum-01",
+        "type": "slum",
+        "fraction": 0.3223
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.1871
+      },
+      {
+        "id": "university-01",
+        "type": "university",
+        "fraction": 0.119
+      },
+      {
+        "id": "construction-site-01",
+        "type": "construction_site",
+        "fraction": 0.0331
+      }
+    ],
+    "x6144_y4608": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.8575
+      },
+      {
+        "id": "slum-01",
+        "type": "slum",
+        "fraction": 0.1185
+      },
+      {
+        "id": "construction-site-01",
+        "type": "construction_site",
+        "fraction": 0.0239
+      }
+    ],
+    "x6912_y4608": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x7168_y4608": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x0_y5376": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.7994
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.2006
+      }
+    ],
+    "x768_y5376": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.9401
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.0599
+      }
+    ],
+    "x1536_y5376": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.701
+      },
+      {
+        "id": "warehouse-district-01",
+        "type": "warehouse_district",
+        "fraction": 0.2956
+      }
+    ],
+    "x2304_y5376": [
+      {
+        "id": "warehouse-district-01",
+        "type": "warehouse_district",
+        "fraction": 0.7037
+      },
+      {
+        "id": "barracks-01",
+        "type": "barracks",
+        "fraction": 0.1153
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1114
+      },
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.062
+      }
+    ],
+    "x3072_y5376": [
+      {
+        "id": "park-01",
+        "type": "park",
+        "fraction": 0.3503
+      },
+      {
+        "id": "docks-01",
+        "type": "docks",
+        "fraction": 0.2586
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1523
+      },
+      {
+        "id": "warehouse-district-01",
+        "type": "warehouse_district",
+        "fraction": 0.1404
+      },
+      {
+        "id": "barracks-01",
+        "type": "barracks",
+        "fraction": 0.0982
+      }
+    ],
+    "x3840_y5376": [
+      {
+        "id": "park-01",
+        "type": "park",
+        "fraction": 0.4099
+      },
+      {
+        "id": "docks-01",
+        "type": "docks",
+        "fraction": 0.3962
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1273
+      },
+      {
+        "id": "city-gate-plaza-02",
+        "type": "city_gate_plaza",
+        "fraction": 0.0442
+      },
+      {
+        "id": "university-01",
+        "type": "university",
+        "fraction": 0.0222
+      }
+    ],
+    "x4608_y5376": [
+      {
+        "id": "city-gate-plaza-02",
+        "type": "city_gate_plaza",
+        "fraction": 0.5183
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1316
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.1227
+      },
+      {
+        "id": "docks-01",
+        "type": "docks",
+        "fraction": 0.1003
+      },
+      {
+        "id": "university-01",
+        "type": "university",
+        "fraction": 0.0685
+      },
+      {
+        "id": "park-01",
+        "type": "park",
+        "fraction": 0.0585
+      }
+    ],
+    "x5376_y5376": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.6884
+      },
+      {
+        "id": "city-gate-plaza-02",
+        "type": "city_gate_plaza",
+        "fraction": 0.253
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.0586
+      }
+    ],
+    "x6144_y5376": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.975
+      },
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.025
+      }
+    ],
+    "x6912_y5376": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9916
+      }
+    ],
+    "x7168_y5376": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.9984
+      }
+    ],
+    "x0_y6144": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x768_y6144": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x1536_y6144": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.9875
+      },
+      {
+        "id": "warehouse-district-01",
+        "type": "warehouse_district",
+        "fraction": 0.0125
+      }
+    ],
+    "x2304_y6144": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.7371
+      },
+      {
+        "id": "warehouse-district-01",
+        "type": "warehouse_district",
+        "fraction": 0.2381
+      },
+      {
+        "id": "docks-01",
+        "type": "docks",
+        "fraction": 0.0246
+      }
+    ],
+    "x3072_y6144": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.5571
+      },
+      {
+        "id": "docks-01",
+        "type": "docks",
+        "fraction": 0.3174
+      },
+      {
+        "id": "warehouse-district-01",
+        "type": "warehouse_district",
+        "fraction": 0.081
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.0444
+      }
+    ],
+    "x3840_y6144": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.3414
+      },
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.2857
+      },
+      {
+        "id": "docks-01",
+        "type": "docks",
+        "fraction": 0.2523
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1206
+      }
+    ],
+    "x4608_y6144": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.8282
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.0822
+      },
+      {
+        "id": "docks-01",
+        "type": "docks",
+        "fraction": 0.0512
+      },
+      {
+        "id": "city-gate-plaza-02",
+        "type": "city_gate_plaza",
+        "fraction": 0.0383
+      }
+    ],
+    "x5376_y6144": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.8519
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1473
+      }
+    ],
+    "x6144_y6144": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.466
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.3883
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.1457
+      }
+    ],
+    "x6912_y6144": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.6253
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.298
+      },
+      {
+        "id": "forest-03",
+        "type": "forest",
+        "fraction": 0.043
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.0337
+      }
+    ],
+    "x7168_y6144": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.5346
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.3651
+      },
+      {
+        "id": "forest-03",
+        "type": "forest",
+        "fraction": 0.0995
+      }
+    ],
+    "x0_y6912": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x768_y6912": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x1536_y6912": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x2304_y6912": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x3072_y6912": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.9985
+      }
+    ],
+    "x3840_y6912": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.5501
+      },
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.4499
+      }
+    ],
+    "x4608_y6912": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x5376_y6912": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x6144_y6912": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.6031
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.3311
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.0658
+      }
+    ],
+    "x6912_y6912": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.8351
+      },
+      {
+        "id": "forest-03",
+        "type": "forest",
+        "fraction": 0.0775
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.0507
+      },
+      {
+        "id": "river-01",
+        "type": "river",
+        "fraction": 0.0367
+      }
+    ],
+    "x7168_y6912": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.689
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.1971
+      },
+      {
+        "id": "forest-03",
+        "type": "forest",
+        "fraction": 0.1131
+      }
+    ],
+    "x0_y7168": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x768_y7168": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x1536_y7168": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x2304_y7168": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 1.0
+      }
+    ],
+    "x3072_y7168": [
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.9721
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.0279
+      }
+    ],
+    "x3840_y7168": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.6594
+      },
+      {
+        "id": "farmland-01",
+        "type": "farmland",
+        "fraction": 0.3406
+      }
+    ],
+    "x4608_y7168": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x5376_y7168": [
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 1.0
+      }
+    ],
+    "x6144_y7168": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.5562
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.4408
+      }
+    ],
+    "x6912_y7168": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.6669
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.2526
+      },
+      {
+        "id": "forest-03",
+        "type": "forest",
+        "fraction": 0.0775
+      }
+    ],
+    "x7168_y7168": [
+      {
+        "id": "lake-01",
+        "type": "lake",
+        "fraction": 0.4617
+      },
+      {
+        "id": "wilderness-01",
+        "type": "wilderness",
+        "fraction": 0.4396
+      },
+      {
+        "id": "forest-03",
+        "type": "forest",
+        "fraction": 0.0987
+      }
+    ]
+  },
+  "source_image": "exp-c/runs/dn050_ov256_mask/stitched.png",
+  "source_sha256": "83baa2b9be7372942a6badc877a3c5476bc8b7480d4072744b93634d40862dfb",
+  "upscaled_sha256": "3181783a5e459785f7742906bc681d401bbc3961fcbf35cd7aa2cf04942487d8",
+  "region_manifest_sha256": "af7c60048a417792724599937296172b2b1cf44ec393a97b4d52caadefee23ba",
+  "model_file_sha256": {
+    "checkpoints/sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
+    "controlnet/xinsir_controlnet-tile-sdxl-1.0.safetensors": "9f23ba7be22bf8796c12565e00ea4b287acac982cdf384d368a8b18b6990e011"
+  },
+  "overlap_disagreement": {
+    "mean": 6.579,
+    "p95": 8.103,
+    "max": 10.885,
+    "pairs": 220
+  },
+  "stitched_sha256": "59364311c0da35f698ea5332edbddce7d9ec5c2b37d75e4abaa63d0e15f8216d",
+  "wall_clock_s": 1275.2
+}
