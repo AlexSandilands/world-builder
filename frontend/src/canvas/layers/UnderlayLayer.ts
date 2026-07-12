@@ -37,6 +37,10 @@ export class UnderlayLayer extends Container {
   private loadedRef: string | null = null
   private lastScene: UnderlayScene | null = null
   private lastScale = 1
+  // The texture currently applied to `sprite`, iff it's one we loaded (and
+  // therefore own and must destroy). Starts null: the sprite's initial
+  // texture is Pixi's shared default, which this layer must never destroy.
+  private ownedTexture: Texture | null = null
 
   constructor(theme: OverlayTheme, fetchTexture = fetchImageTexture) {
     super()
@@ -86,7 +90,13 @@ export class UnderlayLayer extends Container {
           texture.destroy(true)
           return
         }
+        // Same-slot replacement: swap the owned texture reference before
+        // destroying the old one, so a use-after-destroy is impossible even
+        // if `destroy` were to synchronously re-enter this layer.
+        const replaced = this.ownedTexture
         this.sprite.texture = texture
+        this.ownedTexture = texture
+        if (replaced) replaced.destroy(true)
         // width/height were set against the previous (possibly empty)
         // texture; the new texture changes the scale they imply, so re-lay-
         // out now rather than waiting for the next unrelated redraw.
@@ -117,6 +127,14 @@ export class UnderlayLayer extends Container {
   }
 
   destroy(): void {
+    // Container.destroy({children:true}) does not imply texture:true on the
+    // sprite child, so the owned texture needs its own explicit destroy —
+    // guarded so a load that resolves after this runs (see loadTexture's
+    // `this.destroyed` check) never double-destroys it.
+    if (this.ownedTexture) {
+      this.ownedTexture.destroy(true)
+      this.ownedTexture = null
+    }
     super.destroy({ children: true })
   }
 }
