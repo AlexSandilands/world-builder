@@ -1,5 +1,5 @@
 import { Texture } from 'pixi.js'
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import type { Underlay } from '../../generated/project'
 import type { OverlayTheme } from '../overlayTheme'
 import type { UnderlayScene } from './UnderlayLayer'
@@ -31,6 +31,17 @@ function layerWithWhiteTexture(): UnderlayLayer {
 async function textureLoaded(): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 0))
 }
+
+// A minimal stand-in for a loaded Texture: distinct per call (unlike the
+// shared, must-never-be-destroyed Texture.WHITE singleton the placement
+// tests use above), with a spy-able destroy so the tests below can assert
+// exactly-once destruction of superseded/replaced textures.
+function fakeTexture(): Texture {
+  return { orig: { width: 16, height: 16 }, dynamic: false, destroy: vi.fn() } as unknown as Texture
+}
+
+const REF_B = 'b'.repeat(64)
+const REF_C = 'c'.repeat(64)
 
 describe('UnderlayLayer sprite placement (PR #54 human-verify defect)', () => {
   test('sprite bounds equal the underlay rect exactly, texture size notwithstanding', async () => {
@@ -71,5 +82,87 @@ describe('UnderlayLayer sprite placement (PR #54 human-verify defect)', () => {
     expect(bounds.y).toBeCloseTo(150)
     expect(bounds.width).toBeCloseTo(300)
     expect(bounds.height).toBeCloseTo(400)
+  })
+})
+
+describe('UnderlayLayer texture lifecycle (issue #56)', () => {
+  test('the first load never destroys anything (sprite starts on the shared default texture)', async () => {
+    const textureA = fakeTexture()
+    const layer = new UnderlayLayer(theme, () => Promise.resolve(textureA))
+    layer.redraw(scene(UNDERLAY), 1)
+    await textureLoaded()
+
+    expect(textureA.destroy).not.toHaveBeenCalled()
+  })
+
+  test('same-slot replacement: re-importing destroys the previous texture exactly once', async () => {
+    const textureA = fakeTexture()
+    const textureB = fakeTexture()
+    const textures = [textureA, textureB]
+    let i = 0
+    const layer = new UnderlayLayer(theme, () => Promise.resolve(textures[i++]))
+
+    layer.redraw(scene(UNDERLAY), 1)
+    await textureLoaded()
+    expect(textureA.destroy).not.toHaveBeenCalled()
+
+    // Re-import: same underlay slot, new imageRef.
+    layer.redraw(scene({ ...UNDERLAY, imageRef: REF_B }), 1)
+    await textureLoaded()
+
+    expect(textureA.destroy).toHaveBeenCalledTimes(1)
+    expect(textureA.destroy).toHaveBeenCalledWith(true)
+    expect(textureB.destroy).not.toHaveBeenCalled()
+    expect(layer.getChildAt(0).getBounds().width).toBeCloseTo(400)
+  })
+
+  test('a superseded in-flight load is destroyed once and never becomes use-after-destroy for the live one', async () => {
+    const textureA = fakeTexture()
+    const textureB = fakeTexture()
+    const textureC = fakeTexture()
+    const textures = [textureA, textureB, textureC]
+    let i = 0
+    const layer = new UnderlayLayer(theme, () => Promise.resolve(textures[i++]))
+
+    // Three re-imports fired before any fetch resolves — the middle one
+    // (B) is superseded before it's ever applied to the sprite.
+    layer.redraw(scene(UNDERLAY), 1)
+    layer.redraw(scene({ ...UNDERLAY, imageRef: REF_B }), 1)
+    layer.redraw(scene({ ...UNDERLAY, imageRef: REF_C }), 1)
+    await textureLoaded()
+
+    expect(textureA.destroy).toHaveBeenCalledTimes(1)
+    expect(textureB.destroy).toHaveBeenCalledTimes(1)
+    expect(textureC.destroy).not.toHaveBeenCalled()
+  })
+
+  test('destroying the layer destroys the currently-owned texture exactly once, even with a load in flight', async () => {
+    const textureA = fakeTexture()
+    let resolveB: (t: Texture) => void = () => {}
+    const textureB = fakeTexture()
+    let calls = 0
+    const layer = new UnderlayLayer(theme, () => {
+      calls += 1
+      return calls === 1
+        ? Promise.resolve(textureA)
+        : new Promise((resolve) => (resolveB = resolve))
+    })
+
+    layer.redraw(scene(UNDERLAY), 1)
+    await textureLoaded()
+    expect(textureA.destroy).not.toHaveBeenCalled()
+
+    // Start a second load, then destroy the layer before it resolves.
+    layer.redraw(scene({ ...UNDERLAY, imageRef: REF_B }), 1)
+    layer.destroy()
+    expect(textureA.destroy).toHaveBeenCalledTimes(1)
+
+    // The in-flight load resolving after destroy must not touch the
+    // already-destroyed A, and must clean up its own now-orphaned texture.
+    resolveB(textureB)
+    await textureLoaded()
+
+    expect(textureA.destroy).toHaveBeenCalledTimes(1)
+    expect(textureB.destroy).toHaveBeenCalledTimes(1)
   })
 })
