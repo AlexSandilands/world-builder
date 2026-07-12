@@ -173,6 +173,13 @@
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
 }
 
+/* Points carry no vocabulary maskColor (docs/schema/project-v1.md); the
+   layer-row swatch reuses the canvas marker colour instead, as a dot. */
+.point-swatch {
+  border-radius: var(--radius-full);
+  background: var(--text-brand);
+}
+
 .warning-dot {
   width: 7px;
   height: 7px;

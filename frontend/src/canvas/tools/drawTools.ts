@@ -1,7 +1,7 @@
-import type { Region } from '../../generated/project'
+import type { Line, Point, Region } from '../../generated/project'
 import type { XY } from '../../features/regions/geometry'
 import { simplifyPolyline } from '../../features/regions/geometry'
-import { nextRegionId, nextZ } from '../../state/commands'
+import { nextLineId, nextPointId, nextRegionId, nextZ } from '../../state/commands'
 import { useEditorStore } from '../../state/editorStore'
 import { useProjectStore } from '../../state/projectStore'
 import type { Draft, PointerInfo, Tool, ToolContext } from './toolTypes'
@@ -11,6 +11,9 @@ const LASSO_SAMPLE_PX = 2
 // freehand stroke commits as a clean ring, not a jagged one.
 const LASSO_SIMPLIFY_PX = 4
 const MIN_DRAG_PX = 4
+// A double-click's second onDown adds a point at (near enough) the same
+// spot as the click before it; onDoubleClick strips it below this radius.
+const LINE_DEDUPE_PX = 4
 
 function commitRegion(geometry: Region['geometry']): void {
   const project = useProjectStore.getState().project
@@ -123,4 +126,115 @@ export class BoxTool implements Tool {
   private draft(to: XY): Draft {
     return { kind: this.shape, a: this.start!, b: to }
   }
+}
+
+function linesBlocked(): boolean {
+  const e = useEditorStore.getState()
+  return !e.linesVisible || e.linesLocked
+}
+
+function commitLine(points: XY[]): void {
+  const project = useProjectStore.getState().project
+  const editor = useEditorStore.getState()
+  const line: Line = {
+    id: nextLineId(project),
+    type: editor.drawLineType,
+    points: points.map((p): [number, number] => [p.x, p.y]) as [
+      [number, number],
+      [number, number],
+      ...[number, number][],
+    ],
+    width: editor.drawLineWidth,
+  }
+  useProjectStore.getState().dispatch({ kind: 'line/add', line })
+  useEditorStore.getState().selectLines([line.id])
+}
+
+// Click-to-place polyline. The vertex commits on *release* — a press starts
+// placing it, dragging fine-places it, letting go lands it exactly where the
+// preview shows (PR #59 round 1: committing on press made the release-point
+// preview a lie). Between clicks the rubber band follows the cursor (hover
+// onMove routing in CanvasController). A double-click or Enter finishes the
+// line; Escape cancels via Tool.cancel.
+export class LineTool implements Tool {
+  private committed: XY[] | null = null
+  // True between a pointer press and its release: the vertex being placed.
+  private pending = false
+
+  onDown(e: PointerInfo, ctx: ToolContext): boolean {
+    if (linesBlocked()) return false
+    this.committed ??= []
+    this.pending = true
+    this.draft(ctx, e.world)
+    return true
+  }
+
+  onMove(e: PointerInfo, ctx: ToolContext): void {
+    if (!this.committed) return
+    this.draft(ctx, e.world)
+  }
+
+  onUp(e: PointerInfo, ctx: ToolContext): void {
+    if (!this.committed || !this.pending) return
+    this.pending = false
+    this.committed = [...this.committed, e.world]
+    this.draft(ctx, e.world)
+  }
+
+  onDoubleClick(_e: PointerInfo, ctx: ToolContext): void {
+    const points = this.committed
+    if (!points) return
+    // The double-click's own two clicks each committed a vertex at (nearly)
+    // the same spot; strip the trailing duplicates before finishing.
+    const tolerance = LINE_DEDUPE_PX / ctx.scale()
+    while (points.length >= 2) {
+      const last = points[points.length - 1]
+      const prev = points[points.length - 2]
+      if (Math.hypot(last.x - prev.x, last.y - prev.y) >= tolerance) break
+      points.pop()
+    }
+    this.finish(ctx)
+  }
+
+  // Enter finishes too (CanvasController routes it here). No dedupe: every
+  // vertex was a deliberate click, unlike the double-click's phantom pair.
+  finish(ctx: ToolContext): void {
+    const points = this.committed
+    this.committed = null
+    this.pending = false
+    ctx.setDraft(null)
+    if (!points || points.length < 2) return
+    commitLine(points)
+  }
+
+  cancel(ctx: ToolContext): void {
+    this.committed = null
+    this.pending = false
+    ctx.setDraft(null)
+  }
+
+  private draft(ctx: ToolContext, cursor: XY): void {
+    ctx.setDraft({ kind: 'line', points: [...this.committed!, cursor] })
+  }
+}
+
+// Click-to-place landmark/gate point.
+export class PointTool implements Tool {
+  onDown(e: PointerInfo): boolean {
+    const editor = useEditorStore.getState()
+    if (!editor.pointsVisible || editor.pointsLocked) return false
+    const project = useProjectStore.getState().project
+    const point: Point = {
+      id: nextPointId(project),
+      type: editor.drawPointType,
+      position: [e.world.x, e.world.y],
+    }
+    useProjectStore.getState().dispatch({ kind: 'point/add', point })
+    useEditorStore.getState().selectPoints([point.id])
+    return true
+  }
+
+  onMove(): void {}
+  onUp(): void {}
+  cancel(): void {}
 }

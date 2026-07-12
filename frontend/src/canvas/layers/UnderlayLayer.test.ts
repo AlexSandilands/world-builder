@@ -12,6 +12,7 @@ const theme: OverlayTheme = {
   warningFill: 'rgba(217, 138, 63, 0.2)',
   handle: '#f2ede2',
   draft: '#c9a45c',
+  marker: '#d6b877',
 }
 
 const UNDERLAY: Underlay = { imageRef: 'a'.repeat(64), x: 100, y: 200, width: 400, height: 300 }

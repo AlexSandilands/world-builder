@@ -2,6 +2,8 @@ import { Application, Container } from 'pixi.js'
 import type { XY } from '../features/regions/geometry'
 import { handlesFor } from '../features/regions/handles'
 import { topRegionAt } from '../features/regions/hitTest'
+import { LineInteraction } from '../features/lines/interaction'
+import { PointInteraction } from '../features/points/interaction'
 import { UnderlayInteraction } from '../features/underlay/interaction'
 import type { ToolId } from '../state/editorStore'
 import { useEditorStore } from '../state/editorStore'
@@ -13,7 +15,7 @@ import { VectorLayer } from './layers/VectorLayer'
 import { SyntheticTileSource } from './tiles/TileSource'
 import { TileLayer } from './tiles/TileLayer'
 import { readOverlayTheme } from './overlayTheme'
-import { BoxTool, LassoTool } from './tools/drawTools'
+import { BoxTool, LassoTool, LineTool, PointTool } from './tools/drawTools'
 import { SelectTool } from './tools/selectTool'
 import type { Draft, PointerInfo, Tool, ToolContext } from './tools/toolTypes'
 
@@ -75,12 +77,16 @@ export class CanvasController {
   private readonly onReadout: Readout
   private readonly onContextMenu: ContextMenuHandler
   private readonly underlayInteraction = new UnderlayInteraction()
+  private readonly lineInteraction = new LineInteraction()
+  private readonly pointInteraction = new PointInteraction()
   private readonly tools: Record<ToolId, Tool> = {
     select: new SelectTool(),
     hand: HAND_TOOL,
     lasso: new LassoTool(),
     rect: new BoxTool('rect'),
     ellipse: new BoxTool('ellipse'),
+    line: new LineTool(),
+    point: new PointTool(),
   }
   private readonly toolContext: ToolContext = {
     scale: () => this.view.scale,
@@ -128,16 +134,22 @@ export class CanvasController {
 
     this.bindInput()
     this.disposers.push(useProjectStore.subscribe(() => this.renderVectors()))
-    this.disposers.push(
-      useEditorStore.subscribe((state, prev) => {
-        if (state.tool !== prev.tool) {
-          this.cancelActive()
-          this.updateCursor()
-        }
-        this.renderVectors()
-      }),
-    )
+    this.disposers.push(useEditorStore.subscribe(this.onEditorChange))
     this.fit()
+  }
+
+  // Class field (not a mount-time closure) so regression tests can drive the
+  // exact handler the store subscription registers, without a WebGL mount.
+  private readonly onEditorChange = (state: { tool: ToolId }, prev: { tool: ToolId }): void => {
+    if (state.tool !== prev.tool) {
+      this.cancelActive()
+      // A multi-click draw tool (line) can be mid-gesture between
+      // pointer-up events, when it is not `activeDrag` — cancel the tool
+      // being left explicitly so switching away mid-draw discards it.
+      this.tools[prev.tool].cancel(this.toolContext)
+      this.updateCursor()
+    }
+    this.renderVectors()
   }
 
   fit(): void {
@@ -155,13 +167,19 @@ export class CanvasController {
     drag?.cancel(this.toolContext)
   }
 
-  // The select tool also owns the underlay: try it first (it declines fast —
-  // hidden/locked/absent/miss — when it's not the pointer's target) so a
-  // click on the underlay moves it instead of falling through to a region
-  // marquee. Other tools (draw, hand) never touch the underlay.
+  // The select tool also owns points, lines and the underlay: try them first
+  // in visual top-to-bottom order (each declines fast — hidden/locked/miss —
+  // when it's not the pointer's target) so a click on the topmost thing under
+  // the cursor wins over broader hit-tests beneath it (a region marquee,
+  // ultimately). Other tools (draw, hand) never touch them.
   private pointerDownCandidates(): Tool[] {
     if (useEditorStore.getState().tool !== 'select') return [this.activeTool()]
-    return [this.underlayInteraction, this.activeTool()]
+    return [
+      this.pointInteraction,
+      this.lineInteraction,
+      this.underlayInteraction,
+      this.activeTool(),
+    ]
   }
 
   private pointerInfo(e: PointerEvent | MouseEvent): PointerInfo {
@@ -181,6 +199,8 @@ export class CanvasController {
   }
 
   private updateCursor(): void {
+    // No renderer before mount (handler regression tests run unmounted).
+    if (!this.app.renderer) return
     const style = this.app.canvas.style
     if (this.panning) style.cursor = 'grabbing'
     else if (this.spaceHeld || useEditorStore.getState().tool === 'hand') style.cursor = 'grab'
@@ -221,7 +241,13 @@ export class CanvasController {
         this.activeDrag.onMove(this.pointerInfo(e), this.toolContext)
         return
       }
-      if (!this.panning) return
+      if (!this.panning) {
+        // Hover (no button held): a multi-click tool's rubber band (line)
+        // must track the cursor between clicks. Other tools' onMove no-ops
+        // without an in-progress gesture, so routing every hover is safe.
+        this.activeTool().onMove(this.pointerInfo(e), this.toolContext)
+        return
+      }
       this.view = panBy(this.view, e.clientX - this.last.x, e.clientY - this.last.y)
       this.last = { x: e.clientX, y: e.clientY }
       this.apply()
@@ -237,23 +263,18 @@ export class CanvasController {
       this.updateCursor()
     }
     const onDoubleClick = (e: MouseEvent) => {
-      this.activeTool().onDoubleClick?.(this.pointerInfo(e), this.toolContext)
+      const info = this.pointerInfo(e)
+      // Try every select-tool candidate, not just activeTool(): line-vertex
+      // insertion lives on lineInteraction, a separate instance from the
+      // region SelectTool. Each candidate no-ops unless its own selection
+      // guard matches, so trying all of them is safe.
+      for (const candidate of this.pointerDownCandidates()) {
+        candidate.onDoubleClick?.(info, this.toolContext)
+      }
     }
     const onContextMenu = (e: MouseEvent) => {
       e.preventDefault()
       this.openContextMenu(e)
-    }
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        this.cancelActive()
-        this.renderVectors()
-        return
-      }
-      if (e.code === 'Space' && !this.spaceHeld && !isTypingTarget(document.activeElement)) {
-        e.preventDefault()
-        this.spaceHeld = true
-        this.updateCursor()
-      }
     }
     const onKeyUp = (e: KeyboardEvent) => {
       if (e.code === 'Space' && this.spaceHeld) {
@@ -270,7 +291,7 @@ export class CanvasController {
     canvas.addEventListener('pointerleave', onUp)
     canvas.addEventListener('dblclick', onDoubleClick)
     canvas.addEventListener('contextmenu', onContextMenu)
-    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keydown', this.onKeyDown)
     window.addEventListener('keyup', onKeyUp)
     this.app.renderer.on('resize', onResize)
     this.disposers.push(() => {
@@ -281,10 +302,35 @@ export class CanvasController {
       canvas.removeEventListener('pointerleave', onUp)
       canvas.removeEventListener('dblclick', onDoubleClick)
       canvas.removeEventListener('contextmenu', onContextMenu)
-      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keydown', this.onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
       this.app.renderer.off('resize', onResize)
     })
+  }
+
+  // Class field (not a mount-time closure) so regression tests can drive the
+  // exact handler bindInput registers, without a WebGL mount. Escape and
+  // Enter must route through activeTool(), not just activeDrag: a multi-click
+  // tool (line) is mid-gesture *between* clicks, when nothing is activeDrag.
+  private readonly onKeyDown = (e: KeyboardEvent): void => {
+    if (e.key === 'Escape') {
+      this.cancelActive()
+      this.activeTool().cancel(this.toolContext)
+      this.renderVectors()
+      return
+    }
+    if (e.key === 'Enter' && !isTypingTarget(document.activeElement)) {
+      // Finish a multi-click gesture (line tool). Tools without one have
+      // no finish() and the keypress falls through untouched.
+      this.activeTool().finish?.(this.toolContext)
+      this.renderVectors()
+      return
+    }
+    if (e.code === 'Space' && !this.spaceHeld && !isTypingTarget(document.activeElement)) {
+      e.preventDefault()
+      this.spaceHeld = true
+      this.updateCursor()
+    }
   }
 
   // Right-click selects the region under the cursor (so the menu acts on it)
@@ -346,7 +392,11 @@ export class CanvasController {
       {
         project: useProjectStore.getState().project,
         selectedRegionIds: editor.selectedRegionIds,
+        selectedLineIds: editor.selectedLineIds,
+        selectedPointIds: editor.selectedPointIds,
         regionsVisible: editor.regionsVisible,
+        linesVisible: editor.linesVisible,
+        pointsVisible: editor.pointsVisible,
         draft: this.draft,
       },
       this.view.scale,

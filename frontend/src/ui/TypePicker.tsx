@@ -1,16 +1,27 @@
 import { useEffect, useRef, useState } from 'react'
-import type { RegionTypeDef } from '../generated/project'
 
-type Props = {
-  types: RegionTypeDef[]
-  value: string
-  onChange: (typeId: string) => void
+// Structural subset shared by RegionTypeDef and PointTypeDef (and the fixed
+// line-type enum via a synthetic option list) — maskColor is optional so
+// point/line options render a neutral swatch instead of a vocabulary colour.
+export type TypeOption = {
+  id: string
+  displayName: string
+  promptFragment: string
+  maskColor?: string
 }
 
-// Region-type picker: mask-colour swatch + name in the trigger, and each
-// option previews its default prompt fragment (a native <select> can render
-// neither, hence the custom listbox).
-export function TypePicker({ types, value, onChange }: Props) {
+type Props = {
+  types: TypeOption[]
+  value: string
+  onChange: (typeId: string) => void
+  label?: string
+}
+
+// Type picker: colour swatch + name in the trigger, and each option previews
+// its default prompt fragment (a native <select> can render neither, hence
+// the custom listbox). Used for region types, point types and (given a
+// synthetic option list) the fixed line-type enum.
+export function TypePicker({ types, value, onChange, label = 'Type' }: Props) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const current = types.find((t) => t.id === value)
@@ -47,7 +58,7 @@ export function TypePicker({ types, value, onChange }: Props) {
         </span>
       </button>
       {open && (
-        <ul className="type-picker-list" role="listbox" aria-label="Region type">
+        <ul className="type-picker-list" role="listbox" aria-label={label}>
           {types.map((t) => (
             <li key={t.id} role="option" aria-selected={t.id === value}>
               <button
@@ -58,7 +69,7 @@ export function TypePicker({ types, value, onChange }: Props) {
                   setOpen(false)
                 }}
               >
-                <span className="type-swatch" style={{ background: t.maskColor }} />
+                <span className="type-swatch" style={{ background: t.maskColor ?? '#888' }} />
                 <span className="type-option-text">
                   <span className="type-option-name">{t.displayName}</span>
                   <span className="type-option-prompt">{t.promptFragment}</span>

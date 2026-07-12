@@ -1,14 +1,15 @@
 import { useEffect } from 'react'
 import { CanvasView } from './canvas/CanvasView'
 import { loadPersistedProject } from './features/project/persistence'
+import { Inspector } from './ui/Inspector'
 import { LayerPanel } from './ui/LayerPanel'
-import { RegionInspector } from './ui/RegionInspector'
 import { ToolRail } from './ui/ToolRail'
 import { Toolbar } from './ui/Toolbar'
 import { useEditorHotkeys } from './ui/useEditorHotkeys'
 
 // Authoring shell (mockup: docs/design/mockups/authoring-canvas.png): tool
-// rail, layers panel, pan/zoom canvas with overlay toolbar, region inspector.
+// rail, layers panel, pan/zoom canvas with overlay toolbar, and the
+// selection-routed inspector (region/line/point).
 function App() {
   useEditorHotkeys()
   // Load the last-saved project (if any) once on mount; a fresh browser or
@@ -29,7 +30,7 @@ function App() {
           <CanvasView />
           <Toolbar />
         </main>
-        <RegionInspector />
+        <Inspector />
       </div>
     </div>
   )
