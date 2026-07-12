@@ -1,11 +1,13 @@
 import hashlib
 from pathlib import Path
 
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from starlette.requests import Request
 
 from orchestrator.app import create_app
-from orchestrator.assets.routes import sniff_image_content_type
+from orchestrator.assets.routes import MAX_ASSET_BYTES, sniff_image_content_type
 from orchestrator.config import Settings
 
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
@@ -57,6 +59,44 @@ def test_rejects_empty_upload(tmp_path: Path) -> None:
     with TestClient(_app(tmp_path)) as client:
         resp = client.post("/api/assets", content=b"", headers={"content-type": "image/png"})
         assert resp.status_code == 400
+
+
+def test_rejects_oversized_content_length_without_buffering_body(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A declared Content-Length over the limit must 413 before the body is
+    ever read — patching Request.body to fail proves the handler never calls
+    it, even though the actual bytes sent here are small."""
+
+    async def _fail_if_buffered(self: Request) -> bytes:
+        raise AssertionError("body() must not be called when Content-Length exceeds the limit")
+
+    monkeypatch.setattr(Request, "body", _fail_if_buffered)
+    with TestClient(_app(tmp_path)) as client:
+        resp = client.post(
+            "/api/assets",
+            content=b"x" * 100,
+            headers={
+                "content-type": "image/png",
+                "content-length": str(MAX_ASSET_BYTES + 1),
+            },
+        )
+        assert resp.status_code == 413
+
+
+def test_rejects_body_exceeding_limit_when_content_length_understates_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Streaming backstop: a body that actually exceeds the limit is still
+    rejected even if Content-Length under-reports (or is absent)."""
+    monkeypatch.setattr("orchestrator.assets.routes.MAX_ASSET_BYTES", 16)
+    with TestClient(_app(tmp_path)) as client:
+        resp = client.post(
+            "/api/assets",
+            content=PNG_MAGIC + b"way more than sixteen bytes of data",
+            headers={"content-type": "image/png"},
+        )
+        assert resp.status_code == 413
 
 
 def test_get_missing_asset_404s(tmp_path: Path) -> None:
