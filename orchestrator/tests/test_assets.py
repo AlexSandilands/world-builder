@@ -1,4 +1,5 @@
 import hashlib
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -84,18 +85,21 @@ def test_rejects_oversized_content_length_without_buffering_body(
         assert resp.status_code == 413
 
 
-def test_rejects_body_exceeding_limit_when_content_length_understates_it(
+def test_rejects_body_exceeding_limit_when_content_length_absent(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Streaming backstop: a body that actually exceeds the limit is still
-    rejected even if Content-Length under-reports (or is absent)."""
+    """Streaming backstop: generator content makes httpx send chunked
+    transfer with no Content-Length, so the header pre-check cannot fire —
+    only the mid-stream byte count can produce this 413."""
     monkeypatch.setattr("orchestrator.assets.routes.MAX_ASSET_BYTES", 16)
+
+    def chunks() -> Iterator[bytes]:
+        yield PNG_MAGIC
+        yield b"way more than sixteen bytes of data"
+
     with TestClient(_app(tmp_path)) as client:
-        resp = client.post(
-            "/api/assets",
-            content=PNG_MAGIC + b"way more than sixteen bytes of data",
-            headers={"content-type": "image/png"},
-        )
+        resp = client.post("/api/assets", content=chunks(), headers={"content-type": "image/png"})
+        assert "content-length" not in resp.request.headers
         assert resp.status_code == 413
 
 
