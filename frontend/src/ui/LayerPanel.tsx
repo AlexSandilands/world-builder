@@ -2,6 +2,7 @@ import { isBelowMinSize } from '../features/regions/minSize'
 import { stackingOrder } from '../state/commands'
 import { useEditorStore } from '../state/editorStore'
 import { useProjectStore } from '../state/projectStore'
+import { UnderlaySection } from './UnderlaySection'
 
 // Layers panel: the regions layer (show/hide/lock) with its regions listed
 // top-of-stack first, plus the artwork layer's visibility. Row order mirrors
@@ -99,6 +100,8 @@ export function LayerPanel() {
           <span className="layer-kind">tiles</span>
         </div>
       </div>
+
+      <UnderlaySection />
     </aside>
   )
 }
@@ -111,7 +114,7 @@ const STROKE = {
   strokeLinejoin: 'round',
 } as const
 
-function EyeIcon() {
+export function EyeIcon() {
   return (
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
       <path {...STROKE} d="M1.5 8s2.5-4 6.5-4 6.5 4 6.5 4-2.5 4-6.5 4S1.5 8 1.5 8z" />
@@ -120,7 +123,7 @@ function EyeIcon() {
   )
 }
 
-function EyeClosedIcon() {
+export function EyeClosedIcon() {
   return (
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
       <path {...STROKE} d="M2.5 9.5C4 11 5.8 12 8 12s4-1 5.5-2.5" />
@@ -129,7 +132,7 @@ function EyeClosedIcon() {
   )
 }
 
-function LockIcon() {
+export function LockIcon() {
   return (
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
       <rect {...STROKE} x="3.5" y="7" width="9" height="6.5" rx="1" />
@@ -138,7 +141,7 @@ function LockIcon() {
   )
 }
 
-function UnlockIcon() {
+export function UnlockIcon() {
   return (
     <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
       <rect {...STROKE} x="3.5" y="7" width="9" height="6.5" rx="1" />

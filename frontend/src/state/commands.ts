@@ -1,4 +1,4 @@
-import type { Region, WorldBuilderProject } from '../generated/project'
+import type { Region, Underlay, WorldBuilderProject } from '../generated/project'
 
 // Every mutation of the project document is expressed as one of these
 // commands: plain data with a pure apply and a pure undo, so the full undo
@@ -21,7 +21,15 @@ export type RegionSetZ = {
   changes: { id: string; before: number; after: number }[]
 }
 
-export type Command = RegionAdd | RegionRemove | RegionReplace | RegionSetZ
+// One command covers import (before undefined), transform edit (both
+// defined) and removal (after undefined) — a single underlay, no id needed.
+export type UnderlaySet = {
+  kind: 'underlay/set'
+  before: Underlay | undefined
+  after: Underlay | undefined
+}
+
+export type Command = RegionAdd | RegionRemove | RegionReplace | RegionSetZ | UnderlaySet
 
 export function applyCommand(project: WorldBuilderProject, cmd: Command): WorldBuilderProject {
   switch (cmd.kind) {
@@ -45,6 +53,8 @@ export function applyCommand(project: WorldBuilderProject, cmd: Command): WorldB
         regions: project.regions.map((r) => (zById.has(r.id) ? { ...r, z: zById.get(r.id)! } : r)),
       }
     }
+    case 'underlay/set':
+      return { ...project, underlay: cmd.after }
   }
 }
 
@@ -73,6 +83,8 @@ export function undoCommand(project: WorldBuilderProject, cmd: Command): WorldBu
         regions: project.regions.map((r) => (zById.has(r.id) ? { ...r, z: zById.get(r.id)! } : r)),
       }
     }
+    case 'underlay/set':
+      return { ...project, underlay: cmd.before }
   }
 }
 
@@ -87,6 +99,15 @@ export function removeRegionsCommand(
       .map((region, index) => ({ index, region }))
       .filter((e) => wanted.has(e.region.id)),
   }
+}
+
+export function replaceUnderlayCommand(
+  project: WorldBuilderProject,
+  patch: Partial<Underlay>,
+): UnderlaySet | null {
+  const before = project.underlay
+  if (!before) return null
+  return { kind: 'underlay/set', before, after: { ...before, ...patch } }
 }
 
 export function replaceRegionCommand(

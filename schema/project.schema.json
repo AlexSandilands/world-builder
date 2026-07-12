@@ -18,11 +18,15 @@
   ],
   "properties": {
     "schemaVersion": {
-      "description": "Format version. Readers must reject versions they do not know; migrations are forward-only and live in the orchestrator.",
-      "const": 1
+      "description": "Format version. Readers must reject versions they do not know; migrations are forward-only and live in the orchestrator. v2 added the optional `underlay` field (additive, no other change).",
+      "const": 2
     },
     "meta": { "$ref": "#/$defs/Meta" },
     "global": { "$ref": "#/$defs/GlobalSettings" },
+    "underlay": {
+      "description": "Optional tracing-reference image, authored separately from the artwork and semantic layers. Absent means no underlay imported.",
+      "$ref": "#/$defs/Underlay"
+    },
     "vocabulary": {
       "description": "Per-project type vocabulary (data, not code). Region and point types are defined here; line types are a fixed v1 enum because the compiler handles each specially in the line-art control.",
       "type": "array",
@@ -239,6 +243,27 @@
         "ry": { "type": "number", "exclusiveMinimum": 0 },
         "rotation": {
           "description": "Degrees clockwise (y-down) about the centre. Default 0.",
+          "type": "number"
+        }
+      }
+    },
+    "Underlay": {
+      "description": "A locked-by-default tracing reference, positioned like a RectGeometry (same x/y/width/height/rotation semantics) so it never diverges from the region-rect authoring model. Not part of the artwork or compiler output — never rasterised into a pass. Visibility, opacity and lock state are session UI state, not saved here.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["imageRef", "x", "y", "width", "height"],
+      "properties": {
+        "imageRef": {
+          "description": "sha256 digest of the source image in the orchestrator's content-addressed asset store (GET /api/assets/{digest}).",
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "height": { "type": "number", "exclusiveMinimum": 0 },
+        "rotation": {
+          "description": "Degrees clockwise (y-down) about the rect centre. Default 0.",
           "type": "number"
         }
       }

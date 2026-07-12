@@ -24,6 +24,10 @@ everything under `invalid/`.
   correct. Proves the hand-authored Phase 0 manifest is expressible in v1
   without a schema-side special case. Keep reconciled with
   `experiments/assets/` if that manifest changes.
+- `with-underlay.json` — `minimal.json` plus an `underlay` block (issue #30):
+  proves the optional v2 field round-trips. `imageRef` is a syntactically
+  valid sha256 (the well-known empty-string digest) — fixtures test shape
+  only, not that the blob exists.
 
 ## invalid/
 
@@ -31,7 +35,7 @@ Each file is `minimal.json` with exactly one defect, named for it:
 
 | file | violates |
 |---|---|
-| `wrong-schema-version.json` | `schemaVersion` must be the const `1` |
+| `wrong-schema-version.json` | `schemaVersion` must be the const `2` |
 | `unknown-top-level-field.json` | `additionalProperties: false` at root |
 | `missing-seed.json` | `global.seed` required |
 | `bad-mask-color.json` | colours are canonical lowercase `#rrggbb` |
@@ -39,3 +43,8 @@ Each file is `minimal.json` with exactly one defect, named for it:
 | `unknown-line-type.json` | line type outside the fixed v1 enum |
 | `prompt-missing-mode.json` | prompt override requires explicit `mode` |
 | `region-type-not-kebab.json` | type refs must match the `Id` pattern |
+| `underlay-missing-width.json` | `underlay.width` required |
+
+Note: `schemaVersion` was bumped 1→2 by issue #30 (added the optional
+`underlay` field); all fixtures were bumped in lockstep so each still tests
+exactly the one defect it's named for.

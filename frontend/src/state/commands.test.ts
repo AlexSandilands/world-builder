@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import type { Region, WorldBuilderProject } from '../generated/project'
+import type { Region, Underlay, WorldBuilderProject } from '../generated/project'
 import type { Command } from './commands'
 import {
   applyCommand,
@@ -8,6 +8,7 @@ import {
   removeRegionsCommand,
   reorderCommand,
   replaceRegionCommand,
+  replaceUnderlayCommand,
   stackingOrder,
   undoCommand,
 } from './commands'
@@ -123,6 +124,40 @@ describe('stacking order and reorder', () => {
     const p = projectWith(region('a', 0), region('b', 1), region('c', 2), region('d', 3))
     const applied = applyCommand(p, reorderCommand(p, ['a', 'b'], 'raise')!)
     expect(stackingOrder(applied.regions).map((r) => r.id)).toEqual(['c', 'a', 'b', 'd'])
+  })
+})
+
+function underlay(overrides: Partial<Underlay> = {}): Underlay {
+  return { imageRef: 'a'.repeat(64), x: 0, y: 0, width: 100, height: 80, ...overrides }
+}
+
+describe('underlay/set apply/undo', () => {
+  test('import: before undefined, after defined', () => {
+    const p = createDefaultProject()
+    const cmd: Command = { kind: 'underlay/set', before: undefined, after: underlay() }
+    const applied = applyCommand(p, cmd)
+    expect(applied.underlay).toEqual(underlay())
+    roundTrip(p, cmd)
+  })
+
+  test('transform edit: both defined', () => {
+    const p = { ...createDefaultProject(), underlay: underlay() }
+    const cmd = replaceUnderlayCommand(p, { rotation: 12 })!
+    const applied = applyCommand(p, cmd)
+    expect(applied.underlay?.rotation).toBe(12)
+    roundTrip(p, cmd)
+  })
+
+  test('remove: after undefined', () => {
+    const p = { ...createDefaultProject(), underlay: underlay() }
+    const cmd: Command = { kind: 'underlay/set', before: p.underlay, after: undefined }
+    const applied = applyCommand(p, cmd)
+    expect(applied.underlay).toBeUndefined()
+    expect(undoCommand(applied, cmd).underlay).toEqual(underlay())
+  })
+
+  test('replaceUnderlayCommand returns null when there is nothing to replace', () => {
+    expect(replaceUnderlayCommand(createDefaultProject(), { rotation: 1 })).toBeNull()
   })
 })
 

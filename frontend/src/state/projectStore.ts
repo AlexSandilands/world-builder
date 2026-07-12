@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Geometry, WorldBuilderProject } from '../generated/project'
+import type { Geometry, Underlay, WorldBuilderProject } from '../generated/project'
 import type { Command } from './commands'
 import { applyCommand, undoCommand } from './commands'
 import { createDefaultProject } from './defaultProject'
@@ -18,6 +18,10 @@ type ProjectState = {
   // Transient, non-undoable geometry update for live drag feedback; the drag
   // commits a single region/replace command when it ends.
   previewGeometry: (id: string, geometry: Geometry) => void
+  // Same, for the underlay transform (move/resize drag); commits a single
+  // underlay/set command on release.
+  previewUnderlay: (underlay: Underlay) => void
+  setProject: (project: WorldBuilderProject) => void
   undo: () => void
   redo: () => void
 }
@@ -38,6 +42,13 @@ export const useProjectStore = create<ProjectState>((set) => ({
         regions: s.project.regions.map((r) => (r.id === id ? { ...r, geometry } : r)),
       },
     })),
+  previewUnderlay: (underlay) => set((s) => ({ project: { ...s.project, underlay } })),
+  // Replaces the whole document (project open/reload) without going through
+  // the undo stack — a freshly loaded document has no history to undo into.
+  setProject: (project) => {
+    useHistoryStore.getState().clear()
+    set({ project })
+  },
   undo: () => {
     const cmd = useHistoryStore.getState().takeUndo()
     if (cmd) set((s) => ({ project: undoCommand(s.project, cmd) }))

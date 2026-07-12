@@ -1,0 +1,65 @@
+/* Underlay layer controls (LayerPanel's UnderlaySection). Split from
+   panels.css (500 LoC cap). */
+
+.underlay-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.underlay-controls > button {
+  font: inherit;
+  font-size: var(--text-sm);
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: all var(--motion-fast);
+}
+
+.underlay-controls > button:hover:not(:disabled) {
+  border-color: var(--accent-brass);
+  color: var(--accent-brass-hover);
+}
+
+.underlay-controls > button:disabled {
+  color: var(--text-faint);
+  cursor: default;
+  opacity: 0.55;
+}
+
+.underlay-controls input[type='number'] {
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--surface-inset);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-control);
+  padding: var(--space-2) var(--space-3);
+  width: 100%;
+}
+
+.underlay-controls input[type='number']:disabled {
+  color: var(--text-faint);
+}
+
+.underlay-controls input[type='range'] {
+  accent-color: var(--accent-brass);
+  width: 100%;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

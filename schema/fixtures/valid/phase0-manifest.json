@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "meta": {
     "name": "Phase 0 region manifest",
     "description": "Direct translation of experiments/assets/region_manifest.json (issue #2's hand-authored Phase 0 test city) into the v1 project format: proves the format expresses a real, already-built asset set. Mirrors that manifest 1:1 (30 regions, 26 types); no lines, points, or labels were authored for it."

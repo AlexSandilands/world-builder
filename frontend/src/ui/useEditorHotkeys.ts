@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { deleteSelectedRegions, reorderSelectedRegions } from '../features/regions/actions'
+import { saveProject } from '../features/project/persistence'
 import type { ToolId } from '../state/editorStore'
 import { useEditorStore } from '../state/editorStore'
 import { useProjectStore } from '../state/projectStore'
@@ -37,6 +38,11 @@ export function useEditorHotkeys(): void {
       if ((e.ctrlKey || e.metaKey) && key === 'y') {
         e.preventDefault()
         useProjectStore.getState().redo()
+        return
+      }
+      if ((e.ctrlKey || e.metaKey) && key === 's') {
+        e.preventDefault()
+        void saveProject()
         return
       }
       if (e.ctrlKey || e.metaKey || e.altKey) return

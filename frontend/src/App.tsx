@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { CanvasView } from './canvas/CanvasView'
+import { loadPersistedProject } from './features/project/persistence'
 import { LayerPanel } from './ui/LayerPanel'
 import { RegionInspector } from './ui/RegionInspector'
 import { ToolRail } from './ui/ToolRail'
@@ -9,6 +11,11 @@ import { useEditorHotkeys } from './ui/useEditorHotkeys'
 // rail, layers panel, pan/zoom canvas with overlay toolbar, region inspector.
 function App() {
   useEditorHotkeys()
+  // Load the last-saved project (if any) once on mount; a fresh browser or
+  // an unreachable orchestrator just leaves the in-memory default in place.
+  useEffect(() => {
+    void loadPersistedProject()
+  }, [])
   return (
     <div className="app-shell">
       <header className="app-header">

@@ -23,11 +23,11 @@ function jsonFilesIn(dir: string): string[] {
 
 // Mirrors schema/fixtures/valid/minimal.json. Typed directly against the
 // generated interface (not a JSON import — literal number/string fields like
-// schemaVersion: 1 widen to `number` through resolveJsonModule and defeat the
+// schemaVersion: 2 widen to `number` through resolveJsonModule and defeat the
 // discriminated-union checks this is meant to catch). The equality assertion
 // below keeps it from drifting from the real fixture.
 const minimalProject: WorldBuilderProject = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   meta: { name: 'Minimal' },
   global: {
     artStylePrompt: 'hand-drawn fantasy city map, ink and watercolour',

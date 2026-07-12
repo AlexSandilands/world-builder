@@ -2,11 +2,13 @@ import type { WorldBuilderProject } from '../generated/project'
 
 // Starter document for a new session: the Phase 0 test-city vocabulary and
 // globals (schema/fixtures/valid/test-city.json) with empty geometry, so the
-// fixture city is authorable from a blank canvas. Project open/save lands
-// with #19; until then this is the document every session starts from.
+// fixture city is authorable from a blank canvas. This is what a session
+// starts from before features/project/persistence's load-on-mount resolves
+// (or when there's nothing to load yet); #19 still owns the full
+// list/open/rename/autosave project-management UI.
 export function createDefaultProject(): WorldBuilderProject {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     meta: { name: 'Untitled city' },
     global: {
       artStylePrompt:
