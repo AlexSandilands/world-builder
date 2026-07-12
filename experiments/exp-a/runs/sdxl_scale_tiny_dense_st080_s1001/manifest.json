@@ -1,0 +1,23 @@
+{
+  "run_id": "sdxl_scale_tiny_dense_st080_s1001",
+  "model_family": "sdxl",
+  "seed": 1001,
+  "control_strength": 0.8,
+  "control_end_percent": 1.0,
+  "prompt_variant": "tiny",
+  "positive_prompt": "hand-drawn top-down fantasy city map, ink and watercolour, seen from high above, hundreds of tiny densely packed rooftops, vast city sprawl",
+  "negative_prompt": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+  "control_variant": "dense",
+  "control_image": "lineart_dense.png",
+  "control_image_sha256": "94c51425e3b305d9dfbe203862caa3e0eed388753216e3072ae0b5fa9c6e0e85",
+  "model_file_sha256": {
+    "checkpoints/sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
+    "controlnet/xinsir_controlnet-scribble-sdxl-1.0.safetensors": "b3e4ac47bc814019d50dc842f579301440deb6d8f09ee1b91a30f527ace1b852"
+  },
+  "output_sha256": "006f3d3bcd6d749c7641d17490e060ad08219ebc6f5c3977a145f49e4ad63314",
+  "wall_clock_s": 27.0,
+  "resolution": [
+    2048,
+    2048
+  ]
+}

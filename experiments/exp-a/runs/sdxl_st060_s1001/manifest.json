@@ -1,0 +1,22 @@
+{
+  "run_id": "sdxl_st060_s1001",
+  "model_family": "sdxl",
+  "seed": 1001,
+  "control_strength": 0.6,
+  "prompt_variant": "base",
+  "positive_prompt": "hand-drawn top-down fantasy city map, ink and watercolour",
+  "negative_prompt": "text, labels, lettering, words, numbers, watermark, signature, blurry, photograph, 3d render",
+  "control_variant": "dense",
+  "control_image": "lineart_dense.png",
+  "control_image_sha256": "94c51425e3b305d9dfbe203862caa3e0eed388753216e3072ae0b5fa9c6e0e85",
+  "model_file_sha256": {
+    "checkpoints/sd_xl_base_1.0.safetensors": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893f7e5b",
+    "controlnet/xinsir_controlnet-scribble-sdxl-1.0.safetensors": "b3e4ac47bc814019d50dc842f579301440deb6d8f09ee1b91a30f527ace1b852"
+  },
+  "output_sha256": "5ff83f46523e8db7aa98c7cd84e31655c67057a879ec23be3e10688f41e24b87",
+  "wall_clock_s": 33.0,
+  "resolution": [
+    2048,
+    2048
+  ]
+}
