@@ -4,6 +4,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, FastAPI
 
+from .assets.routes import router as assets_router
 from .comfy import ComfyClient
 from .config import Settings, load_settings
 from .db import connect
@@ -38,6 +39,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     blobs = BlobStore(Path(settings.blob_root))
     history_repo = HistoryRepo(conn, blobs)
     queue = JobQueue(jobs_repo, events, comfy, history_repo)
+    # Separate root from the history blob store: history's generation-prune
+    # GC (HistoryRepo._gc_blobs) only ever tracks its own referenced digests,
+    # so a content-identical asset in a shared store could be reclaimed out
+    # from under a project that still references it. Disjoint stores make
+    # that collision structurally impossible instead of relying on GC scope.
+    assets = BlobStore(Path(settings.blob_root) / "assets")
 
     app.state.db = conn
     app.state.comfy = comfy
@@ -46,6 +53,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     app.state.jobs_repo = jobs_repo
     app.state.history_repo = history_repo
     app.state.queue = queue
+    app.state.assets = assets
 
     await queue.start()
     try:
@@ -65,6 +73,7 @@ def create_app(settings: Settings | None = None, comfy: ComfyClient | None = Non
     app.include_router(projects_router)
     app.include_router(jobs_router)
     app.include_router(history_router)
+    app.include_router(assets_router)
     return app
 
 

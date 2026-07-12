@@ -2,11 +2,13 @@ import { Application, Container } from 'pixi.js'
 import type { XY } from '../features/regions/geometry'
 import { handlesFor } from '../features/regions/handles'
 import { topRegionAt } from '../features/regions/hitTest'
+import { UnderlayInteraction } from '../features/underlay/interaction'
 import type { ToolId } from '../state/editorStore'
 import { useEditorStore } from '../state/editorStore'
 import { useProjectStore } from '../state/projectStore'
 import type { Viewport } from './viewportMath'
 import { fitToScreen, panBy, screenToWorld, zoomAt } from './viewportMath'
+import { UnderlayLayer } from './layers/UnderlayLayer'
 import { VectorLayer } from './layers/VectorLayer'
 import { SyntheticTileSource } from './tiles/TileSource'
 import { TileLayer } from './tiles/TileLayer'
@@ -58,17 +60,21 @@ export class CanvasController {
   private app = new Application()
   private world = new Container()
   private tiles: TileLayer | null = null
+  private underlay: UnderlayLayer | null = null
   private vectors: VectorLayer | null = null
   private view: Viewport = { tx: 0, ty: 0, scale: 1 }
   private worldSize = { width: 1, height: 1 }
   private draft: Draft | null = null
   private panning = false
-  private toolDragging = false
+  // The specific Tool instance mid-gesture (may be underlayInteraction, not
+  // necessarily this.tools[tool]) — null when no drag is in progress.
+  private activeDrag: Tool | null = null
   private spaceHeld = false
   private last = { x: 0, y: 0 }
   private disposers: Array<() => void> = []
   private readonly onReadout: Readout
   private readonly onContextMenu: ContextMenuHandler
+  private readonly underlayInteraction = new UnderlayInteraction()
   private readonly tools: Record<ToolId, Tool> = {
     select: new SelectTool(),
     hand: HAND_TOOL,
@@ -110,8 +116,13 @@ export class CanvasController {
     // The pyramid is output pixels; the world is canvas units. One uniform
     // scale maps between them (schema invariant I6: equal aspect ratios).
     this.tiles.scale.set(global.canvas.width / global.output.width)
+    // Between tiles and vectors: a reference sits above the artwork and
+    // below the regions traced over it (docs/guidelines/frontend.md's layer
+    // order, extended one slot for the underlay).
+    this.underlay = new UnderlayLayer(readOverlayTheme())
     this.vectors = new VectorLayer(readOverlayTheme())
     this.world.addChild(this.tiles)
+    this.world.addChild(this.underlay)
     this.world.addChild(this.vectors)
     this.app.stage.addChild(this.world)
 
@@ -120,7 +131,7 @@ export class CanvasController {
     this.disposers.push(
       useEditorStore.subscribe((state, prev) => {
         if (state.tool !== prev.tool) {
-          this.cancelActive(prev.tool)
+          this.cancelActive()
           this.updateCursor()
         }
         this.renderVectors()
@@ -138,9 +149,19 @@ export class CanvasController {
     return this.tools[useEditorStore.getState().tool]
   }
 
-  private cancelActive(tool: ToolId): void {
-    this.toolDragging = false
-    this.tools[tool].cancel(this.toolContext)
+  private cancelActive(): void {
+    const drag = this.activeDrag
+    this.activeDrag = null
+    drag?.cancel(this.toolContext)
+  }
+
+  // The select tool also owns the underlay: try it first (it declines fast —
+  // hidden/locked/absent/miss — when it's not the pointer's target) so a
+  // click on the underlay moves it instead of falling through to a region
+  // marquee. Other tools (draw, hand) never touch the underlay.
+  private pointerDownCandidates(): Tool[] {
+    if (useEditorStore.getState().tool !== 'select') return [this.activeTool()]
+    return [this.underlayInteraction, this.activeTool()]
   }
 
   private pointerInfo(e: PointerEvent | MouseEvent): PointerInfo {
@@ -184,14 +205,20 @@ export class CanvasController {
         this.updateCursor()
         return
       }
-      if (e.button === 0 && this.activeTool().onDown(this.pointerInfo(e), this.toolContext)) {
-        this.toolDragging = true
-        this.renderVectors()
+      if (e.button === 0) {
+        const info = this.pointerInfo(e)
+        for (const candidate of this.pointerDownCandidates()) {
+          if (candidate.onDown(info, this.toolContext)) {
+            this.activeDrag = candidate
+            this.renderVectors()
+            break
+          }
+        }
       }
     }
     const onMove = (e: PointerEvent) => {
-      if (this.toolDragging) {
-        this.activeTool().onMove(this.pointerInfo(e), this.toolContext)
+      if (this.activeDrag) {
+        this.activeDrag.onMove(this.pointerInfo(e), this.toolContext)
         return
       }
       if (!this.panning) return
@@ -200,9 +227,10 @@ export class CanvasController {
       this.apply()
     }
     const onUp = (e: PointerEvent) => {
-      if (this.toolDragging) {
-        this.toolDragging = false
-        this.activeTool().onUp(this.pointerInfo(e), this.toolContext)
+      if (this.activeDrag) {
+        const drag = this.activeDrag
+        this.activeDrag = null
+        drag.onUp(this.pointerInfo(e), this.toolContext)
         this.renderVectors()
       }
       this.panning = false
@@ -217,7 +245,7 @@ export class CanvasController {
     }
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        this.cancelActive(useEditorStore.getState().tool)
+        this.cancelActive()
         this.renderVectors()
         return
       }
@@ -304,6 +332,16 @@ export class CanvasController {
   private renderVectors(): void {
     const editor = useEditorStore.getState()
     if (this.tiles) this.tiles.visible = editor.artworkVisible
+    this.underlay?.redraw(
+      {
+        underlay: useProjectStore.getState().project.underlay ?? null,
+        visible: editor.underlayVisible,
+        opacity: editor.underlayOpacity,
+        locked: editor.underlayLocked,
+        selected: editor.underlaySelected,
+      },
+      this.view.scale,
+    )
     this.vectors?.redraw(
       {
         project: useProjectStore.getState().project,
@@ -330,6 +368,7 @@ export class CanvasController {
     for (const dispose of this.disposers) dispose()
     this.disposers = []
     this.tiles?.destroy()
+    this.underlay?.destroy()
     this.app.destroy(true, { children: true })
   }
 }

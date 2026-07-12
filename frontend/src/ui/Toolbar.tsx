@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { saveProject } from '../features/project/persistence'
 import { useProjectStore } from '../state/projectStore'
 import { useViewportStore } from '../state/viewportStore'
 
@@ -9,6 +11,17 @@ export function Toolbar() {
   const zoom = useViewportStore((s) => s.zoomPercent)
   const residentTiles = useViewportStore((s) => s.residentTiles)
   const requestFit = useViewportStore((s) => s.requestFit)
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
+  const onSave = async () => {
+    setSaveState('saving')
+    try {
+      await saveProject()
+      setSaveState('saved')
+    } catch {
+      setSaveState('error')
+    }
+  }
 
   return (
     <div className="toolbar">
@@ -18,6 +31,11 @@ export function Toolbar() {
       <button type="button" onClick={requestFit}>
         Fit
       </button>
+      <button type="button" onClick={() => void onSave()} title="Save (Ctrl/Cmd+S)">
+        {saveState === 'saving' ? 'Saving…' : 'Save'}
+      </button>
+      {saveState === 'saved' && <span className="toolbar-readout">Saved</span>}
+      {saveState === 'error' && <span className="toolbar-readout">Save failed</span>}
     </div>
   )
 }

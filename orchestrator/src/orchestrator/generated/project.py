@@ -170,6 +170,23 @@ class EllipseGeometry(BaseModel):
     )
 
 
+class Underlay(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    imageRef: constr(pattern=r'^[0-9a-f]{64}$') = Field(
+        ...,
+        description="sha256 digest of the source image in the orchestrator's content-addressed asset store (GET /api/assets/{digest}).",
+    )
+    x: float
+    y: float
+    width: PositiveFloat
+    height: PositiveFloat
+    rotation: float | None = Field(
+        None, description='Degrees clockwise (y-down) about the rect centre. Default 0.'
+    )
+
+
 class Mode(Enum):
     extend = 'extend'
     override = 'override'
@@ -298,12 +315,16 @@ class WorldBuilderProject(BaseModel):
     model_config = ConfigDict(
         extra='forbid',
     )
-    schemaVersion: Literal[1] = Field(
+    schemaVersion: Literal[2] = Field(
         ...,
-        description='Format version. Readers must reject versions they do not know; migrations are forward-only and live in the orchestrator.',
+        description='Format version. Readers must reject versions they do not know; migrations are forward-only and live in the orchestrator. v2 added the optional `underlay` field (additive, no other change).',
     )
     meta: Meta
     global_: GlobalSettings = Field(..., alias='global')
+    underlay: Underlay | None = Field(
+        None,
+        description='Optional tracing-reference image, authored separately from the artwork and semantic layers. Absent means no underlay imported.',
+    )
     vocabulary: list[TypeDef] = Field(
         ...,
         description='Per-project type vocabulary (data, not code). Region and point types are defined here; line types are a fixed v1 enum because the compiler handles each specially in the line-art control.',

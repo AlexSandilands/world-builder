@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "meta": { "name": "Minimal" },
+  "meta": { "name": "Minimal with underlay" },
   "global": {
     "artStylePrompt": "hand-drawn fantasy city map, ink and watercolour",
     "canvas": { "width": 1000, "height": 1000 },
@@ -8,6 +8,14 @@
     "scale": { "metersPerUnit": 2 },
     "defaultFillType": "grassland",
     "seed": 0
+  },
+  "underlay": {
+    "imageRef": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "x": 10,
+    "y": 20,
+    "width": 900,
+    "height": 700,
+    "rotation": 3.5
   },
   "vocabulary": [
     {

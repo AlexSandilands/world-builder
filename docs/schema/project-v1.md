@@ -71,6 +71,20 @@ entry is an explicit user act. Label styling is by reference (`styleId` →
 `labelStyles`) so a map keeps a coherent typographic system and restyling is
 one edit. `fontSize` is in canvas units so labels scale with the map.
 
+## Underlay
+
+`underlay` (optional, v2+) is a locked-by-default tracing reference image —
+authoring aid, not artwork. `imageRef` is a sha256 digest into the
+orchestrator's content-addressed asset store (`/api/assets/{digest}`,
+distinct from the history blob store so a generation-history prune can never
+collide with and reclaim a project's underlay bytes). Its placement
+(`x`/`y`/`width`/`height`/`rotation`) deliberately mirrors `RectGeometry` —
+same units, same rotate-about-centre convention — so it reuses the region
+rect-transform math rather than inventing a second one. It is never
+rasterised into a compiler pass. Opacity, visibility and lock are session UI
+state (`docs/frontend` editor store), not saved here — only the placement
+that took effort to get right needs to survive a reload.
+
 ## Invariants beyond the schema
 
 JSON Schema validates shape only. The orchestrator enforces these on load
@@ -108,6 +122,15 @@ migrations) emit canonical form; readers accept any valid JSON.
   There are no downgrades — old clients don't open new files.
 - Any field addition, however innocuous, is a version bump with a migration.
   Cheap bumps are the point: the version number is the compatibility contract.
+- Worked example: v2 (issue #30) added the optional `underlay` field. The
+  migration (`orchestrator/src/orchestrator/projects/migrations.py`) is a
+  one-line version bump — v1 documents are already structurally valid v2
+  documents since the new field is optional. Not yet wired into `ProjectRepo`:
+  that layer stores `data` opaquely with no schema validation today (shape
+  enforcement is future work, same as invariants I1–I7 below), so there is no
+  live call site for it yet. It exists for the first consumer that loads an
+  arbitrary project document — the semantic compiler (#12) or a file-import
+  flow — to call.
 
 ## Deliberate v1 omissions
 

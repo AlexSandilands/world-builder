@@ -32,11 +32,12 @@ export type Vec21 = [number, number];
  */
 export interface WorldBuilderProject {
   /**
-   * Format version. Readers must reject versions they do not know; migrations are forward-only and live in the orchestrator.
+   * Format version. Readers must reject versions they do not know; migrations are forward-only and live in the orchestrator. v2 added the optional `underlay` field (additive, no other change).
    */
-  schemaVersion: 1;
+  schemaVersion: 2;
   meta: Meta;
   global: GlobalSettings;
+  underlay?: Underlay;
   /**
    * Per-project type vocabulary (data, not code). Region and point types are defined here; line types are a fixed v1 enum because the compiler handles each specially in the line-art control.
    *
@@ -94,6 +95,23 @@ export interface GlobalSettings {
    * Base generation seed; per-pass/per-tile seeds derive from it deterministically.
    */
   seed: number;
+}
+/**
+ * Optional tracing-reference image, authored separately from the artwork and semantic layers. Absent means no underlay imported.
+ */
+export interface Underlay {
+  /**
+   * sha256 digest of the source image in the orchestrator's content-addressed asset store (GET /api/assets/{digest}).
+   */
+  imageRef: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /**
+   * Degrees clockwise (y-down) about the rect centre. Default 0.
+   */
+  rotation?: number;
 }
 export interface RegionTypeDef {
   id: Id;

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { importUnderlay } from '../features/underlay/import'
 import { useViewportStore } from '../state/viewportStore'
 import { CanvasContextMenu } from '../ui/CanvasContextMenu'
 import type { ContextMenuRequest } from './CanvasController'
@@ -48,7 +49,17 @@ export function CanvasView() {
 
   return (
     <>
-      <div ref={hostRef} className="canvas-host" data-testid="canvas-host" />
+      <div
+        ref={hostRef}
+        className="canvas-host"
+        data-testid="canvas-host"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault()
+          const file = e.dataTransfer.files[0]
+          if (file) void importUnderlay(file)
+        }}
+      />
       {menu && <CanvasContextMenu request={menu} onClose={() => setMenu(null)} />}
     </>
   )

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "meta": {
     "name": "Phase 0 test city",
     "description": "Hand-authored exemplar city exercising every geometry kind, both prompt modes, both line styles, and curved/haloed labels. Not tied to any asset set; phase0-manifest.json is the fixture that mirrors experiments/assets/."
