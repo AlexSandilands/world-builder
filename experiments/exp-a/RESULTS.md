@@ -51,8 +51,9 @@ watercolour."*
   motivated by the adherence results (release the control before the final
   denoising steps). Flux {0.2/0.8, 0.3/0.8, 0.4/0.5, 0.6/0.4},
   SDXL {0.8/0.5, 1.0/0.4} as strength/end_percent. Sheet: `sheets/followup.jpg`.
-- **Scale phase (6 runs):** prompt-wording and control-density knobs for
-  apparent building size. See "Scale-control findings" below.
+- **Scale phase (6 runs, complete):** prompt-wording and control-density knobs
+  for apparent building size. Sheet: `sheets/scale.jpg`. See "Scale-control
+  findings" below.
 
 ## SDXL findings (`sheets/adherence_sdxl.jpg`, `sheets/followup.jpg`)
 
@@ -101,33 +102,46 @@ or a dedicated lineart ControlNet). The style gap is large and SDXL already
 clears the bar, so this is out of scope for the Pass-1 decision; revisit only
 if a later requirement forces Flux.
 
-## Scale-control findings
+## Scale-control findings (`sheets/scale.jpg`)
 
-<!-- PENDING: the dedicated scale phase (6 runs) requires the GPU, which is
-currently in use by another workload on the shared 4090. This section is
-filled in once those runs complete; the harness resumes them automatically
-(execute_run skips any run whose manifest already exists). -->
-
-Direct evidence from the completed phases already indicates:
-
-- **Control density dominates apparent building size / district texture.** The
-  dense cross-hatch fill drives the model toward a fine street grid (and, in
-  SDXL ≥ 0.6, toward reading that grid as gridded water). Apparent building
-  size tracks the control's line spacing more than anything in the prompt.
-- **Building scale in SDXL is already plausible** at low strength / early
-  cutoff: rooftops are tiny relative to the city extent and the map reads as a
-  real city, not a handful of oversized houses.
-
-The scale phase isolates two knobs on top of this to confirm which one to
-expose in the compiler:
+Six runs isolating two building-size knobs, pinned at SDXL strength 0.8 /
+Flux 0.6, seed 1001:
 
 - **Prompt wording** — base vs *"…tiny densely packed rooftops, vast city
-  sprawl"* vs *"…detailed large buildings, close aerial view."*
-- **Control density** — dense vs sparse line-art (`lineart_sparse.png`).
+  sprawl"* vs *"…detailed large buildings, close aerial view"* (dense control).
+- **Control density** — dense cross-hatch vs sparse walls/roads-only line-art
+  (`lineart_sparse.png`, base prompt).
 
-Pinned strengths: SDXL 0.8, Flux 0.6. Run IDs:
-`sdxl_scale_{base_sparse,tiny_dense,large_dense}_st080_s1001`,
+Run IDs: `sdxl_scale_{base_sparse,tiny_dense,large_dense}_st080_s1001`,
 `flux_scale_{base_sparse,tiny_dense,large_dense}_st060_s1001`.
+
+Findings (SDXL; Flux below):
+
+- **Prompt wording is a real, usable building-size knob.** At identical
+  seed/control, *tiny* yields fields of small, densely packed rooftops and
+  spires; *large* yields visibly bigger, individually articulated buildings.
+  Both keep full style quality. The compiler should expose scale wording
+  (global and per-region once #8 lands) rather than trying to encode building
+  size geometrically.
+- **The water misread is prompt-independent and not hatch-specific.** Both
+  dense-control runs still render the cross-hatched interior as a blue gridded
+  lake — scale wording neither worsens nor rescues it. More telling:
+  `sdxl_scale_base_sparse` (no hatch at all) reads the **ring walls as
+  canals** — a handsome Venice-like city, but the walls became water. At
+  strength 0.8 any unlabelled control stroke gets interpreted as whatever the
+  base model finds plausible, water being its favourite. This sharpens the
+  #4/#5 requirement: the control encoding must *semantically label* features
+  (or pair with regional conditioning); line geometry alone under-determines
+  meaning at useful strengths.
+- **Control density still sets district texture granularity** (fine grid vs
+  open forest-and-town), consistent with the adherence-phase observation; the
+  prompt then tunes building scale *within* that texture.
+
+**Flux:** all three scale runs are the same flat embossed relief as the
+adherence phase — no ink linework, prompt scale wording has no visible effect.
+Consistent with (and further confirming) the rejection; no new failure mode.
+
+Costs at 2048²: SDXL 27–54 s, Flux 75–135 s — matching the ~3× ratio above.
 
 ## Implications for downstream issues (#4–#7)
 
@@ -139,7 +153,11 @@ Pinned strengths: SDXL 0.8, Flux 0.6. Run IDs:
   imagery or regional prompting so district fills are labelled as built-up
   land rather than a texture the base model is free to read as water; or a
   sparser structural control (walls/roads only) with district character
-  supplied by prompt/region conditioning rather than by hatch density.
+  supplied by prompt/region conditioning rather than by hatch density. Note
+  the scale phase showed sparse control is **not sufficient by itself**: at
+  strength 0.8 the unlabelled ring walls were read as canals
+  (`sdxl_scale_base_sparse`), so whichever mechanism is chosen must label
+  features semantically, not just thin out the geometry.
 - Flux is not needed for Pass 1; keep its assets for possible later use
   (inpainting/detail passes) but do not gate Pass 1 on it.
 
